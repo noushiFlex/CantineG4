@@ -1,8 +1,7 @@
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class GestionDesPlats {
-    static ArrayList<PlatRestau> plats = new ArrayList<>();
 
     public static void main() {
         Scanner scanner = new Scanner(System.in);
@@ -41,8 +40,6 @@ public class GestionDesPlats {
                     System.out.println("Choix invalide, veuillez réessayer.");
             }
         } while (choix != 0);
-
-        scanner.close();
     }
 
     public static void afficherMenu() {
@@ -63,69 +60,106 @@ public class GestionDesPlats {
         double prix = scanner.nextDouble();
         scanner.nextLine(); // Consommer la nouvelle ligne
 
-        int id = plats.size() + 1; // Générer un ID unique
+        int id = PlatDAO.getLastPlatId() + 1; // Générer un ID basé sur le dernier ID + 1
         PlatRestau plat = new PlatRestau(id, nom, prix);
-        plats.add(plat);
-        System.out.println("✅ Plat ajouté avec succès !");
+
+        boolean success = PlatDAO.ajouterPlat(plat);
+        if (success) {
+            System.out.println("✅ Plat ajouté avec succès dans la base de données !");
+        } else {
+            System.out.println("❌ Erreur lors de l'ajout du plat.");
+        }
     }
 
     public static void supprimerPlat(Scanner scanner) {
-        if (plats.isEmpty()) {
-            System.out.println("❌ Aucun plat à supprimer.");
+        listerPlats();
+        System.out.print("Entrez l'ID du plat à supprimer : ");
+        int id = scanner.nextInt();
+        scanner.nextLine(); // Consommer la ligne
+
+        PlatRestau plat = PlatDAO.getPlatById(id);
+        if (plat == null) {
+            System.out.println("❌ Plat non trouvé !");
             return;
         }
-        listerPlats();
-        System.out.print("Entrez l'index du plat à supprimer : ");
-        int index = scanner.nextInt();
-        if (index >= 0 && index < plats.size()) {
-            plats.remove(index);
-            System.out.println("✅ Plat supprimé !");
+
+        System.out.print("Êtes-vous sûr de vouloir supprimer ce plat ? (O/N) : ");
+        String confirmation = scanner.nextLine();
+
+        if (confirmation.equalsIgnoreCase("O")) {
+            boolean success = PlatDAO.deletePlat(id);
+            if (success) {
+                System.out.println("✅ Plat supprimé avec succès !");
+            } else {
+                System.out.println("❌ Erreur lors de la suppression du plat.");
+            }
         } else {
-            System.out.println("❌ Index invalide.");
+            System.out.println("Suppression annulée.");
         }
     }
 
     public static void modifierPlat(Scanner scanner) {
-        if (plats.isEmpty()) {
-            System.out.println("❌ Aucun plat à modifier.");
+        listerPlats();
+        System.out.print("Entrez l'ID du plat à modifier : ");
+        int id = scanner.nextInt();
+        scanner.nextLine(); // Consommer la ligne
+
+        PlatRestau plat = PlatDAO.getPlatById(id);
+        if (plat == null) {
+            System.out.println("❌ Plat non trouvé !");
             return;
         }
-        listerPlats();
-        System.out.print("Entrez l'index du plat à modifier : ");
-        int index = scanner.nextInt();
-        scanner.nextLine();
-        if (index >= 0 && index < plats.size()) {
-            System.out.print("Entrez le nouveau nom : ");
-            String nom = scanner.nextLine();
-            System.out.print("Entrez le nouveau prix : ");
-            double prix = scanner.nextDouble();
 
-            PlatRestau plat = plats.get(index);
-            plats.set(index, new PlatRestau(plat.getId(), nom, prix));
-            System.out.println("✅ Plat modifié !");
+        System.out.print("Entrez le nouveau nom (" + plat.getNom() + ") : ");
+        String nom = scanner.nextLine();
+        if (!nom.isEmpty()) plat.setNom(nom);
+
+        System.out.print("Entrez le nouveau prix (" + plat.getPrix() + ") : ");
+        String prixStr = scanner.nextLine();
+        if (!prixStr.isEmpty()) {
+            try {
+                double prix = Double.parseDouble(prixStr);
+                plat.setPrix(prix);
+            } catch (NumberFormatException e) {
+                System.out.println("❌ Prix invalide, l'ancien prix sera conservé.");
+            }
+        }
+
+        boolean success = PlatDAO.updatePlat(plat);
+        if (success) {
+            System.out.println("✅ Plat modifié avec succès !");
         } else {
-            System.out.println("❌ Index invalide.");
+            System.out.println("❌ Erreur lors de la modification du plat.");
         }
     }
 
     public static void listerPlats() {
+        List<PlatRestau> plats = PlatDAO.getAllPlats();
+
         if (plats.isEmpty()) {
             System.out.println("❌ Aucun plat enregistré.");
             return;
         }
+
         System.out.println("\n📋 Liste des plats :");
-        for (int i = 0; i < plats.size(); i++) {
-            System.out.print(i + " - ");
-            System.out.println(plats.get(i));
+        for (PlatRestau plat : plats) {
+            System.out.println(plat);
         }
     }
 
     public static void dernierPlat() {
-        if (plats.isEmpty()) {
+        int lastId = PlatDAO.getLastPlatId();
+        if (lastId == 0) {
             System.out.println("❌ Aucun plat ajouté.");
             return;
         }
-        System.out.println("\n📌 Dernier plat ajouté :");
-        System.out.println(plats.get(plats.size() - 1));
+
+        PlatRestau plat = PlatDAO.getPlatById(lastId);
+        if (plat != null) {
+            System.out.println("\n📌 Dernier plat ajouté :");
+            System.out.println(plat);
+        } else {
+            System.out.println("❌ Impossible de récupérer le dernier plat.");
+        }
     }
 }
