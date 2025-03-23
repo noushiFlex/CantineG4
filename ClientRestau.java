@@ -1,7 +1,7 @@
-public class Client extends Personne {
+public class ClientRestau extends Personne {
 
     // Constructeur qui appelle celui de Personne
-    public Client(int id, String nom, String prenom) {
+    public ClientRestau(int id, String nom, String prenom) {
         super(id, nom, prenom);
     }
 

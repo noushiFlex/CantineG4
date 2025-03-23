@@ -1,9 +1,9 @@
-public class Personnel extends Personne {
+public class PersonnelRestau extends Personne {
     private String poste;
     private double salaire;
 
     // Constructeur
-    public Personnel(int id, String nom, String prenom, String poste, double salaire) {
+    public PersonnelRestau(int id, String nom, String prenom, String poste, double salaire) {
         super(id, nom, prenom);
         this.poste = poste;
         this.salaire = salaire;

@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
@@ -13,7 +14,7 @@ public class Main {
         String motDePasse = scanner.nextLine();
 
         // Vérification des identifiants (simple)
-        if (nomUtilisateur.equals("admin") && motDePasse.equals("1234")) {
+        if (nomUtilisateur.equals("admin") && motDePasse.equals("admin")) {
             System.out.println("\n✅ Connexion réussie !");
             afficherMenu(scanner);
         } else {
@@ -28,26 +29,28 @@ public class Main {
 
         while (continuer) {
             System.out.println("\n===== MENU DE LA CANTINE =====");
-            System.out.println("1. Afficher les plats 🍽️");
+            System.out.println("1. Afficher et gérer les plats 🍽️");
             System.out.println("2. Voir les commandes 🛒");
             System.out.println("3. Voir les clients 👥");
             System.out.println("4. Voir le personnel 🧑‍🍳");
             System.out.println("5. Quitter ❌");
             System.out.print("👉 Choisissez une option: ");
             int choix = scanner.nextInt();
+            scanner.nextLine(); // Consommer la ligne
 
             switch (choix) {
                 case 1:
-                    System.out.println("\n📜 Voici les plats disponibles...");
+                    // Appel de la gestion des plats
+                    GestionDesPlats.main();
                     break;
                 case 2:
-                    System.out.println("\n🛒 Voici la liste des commandes...");
+                    GestionDesCommandes.main();
                     break;
                 case 3:
-                    System.out.println("\n👥 Liste des clients...");
+                    GestionDesClients.main();
                     break;
                 case 4:
-                    System.out.println("\n🧑‍🍳 Liste du personnel...");
+                    GestionDesPersonnels.main();
                     break;
                 case 5:
                     System.out.println("\n👋 Merci d'avoir utilisé la cantine ! À bientôt !");

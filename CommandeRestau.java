@@ -1,26 +1,26 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Commande {
-    private List<Plat> platsCommandes;
+public class CommandeRestau {
+    private List<PlatRestau> platsCommandes;
     private double total;
 
-    public Commande() {
+    public CommandeRestau() {
         this.platsCommandes = new ArrayList<>();
         this.total = 0;
     }
 
     // Ajouter un plat à la commande
-    public void ajouterPlat(Plat plat) {
-        platsCommandes.add(plat);
-        total += plat.getPrix();
+    public void ajouterPlat(PlatRestau platRestau) {
+        platsCommandes.add(platRestau);
+        total += platRestau.getPrix();
     }
 
     // Afficher la commande
     public void afficherCommande() {
         System.out.println("\n---- Votre Commande ----");
-        for (Plat plat : platsCommandes) {
-            System.out.println(plat);
+        for (PlatRestau platRestau : platsCommandes) {
+            System.out.println(platRestau);
         }
         System.out.println("Total à payer: " + total + " FCFA");
     }
