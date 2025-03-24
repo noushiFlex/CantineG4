@@ -25,7 +25,12 @@ public class CommandeRestau {
         System.out.println("Total à payer: " + total + " FCFA");
     }
 
+    // Getters
     public double getTotal() {
         return total;
+    }
+    
+    public List<PlatRestau> getPlatsCommandes() {
+        return platsCommandes;
     }
 }

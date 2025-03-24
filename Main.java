@@ -62,36 +62,3 @@ public class Main {
         }
     }
 }
-//import java.sql.Connection;
-//import java.sql.ResultSet;
-//import java.sql.SQLException;
-//import java.sql.Statement;
-//
-//public class Main {
-//    public static void main(String[] args) {
-//        Connection connection = DatabaseConnection.getConnection();
-//
-//        if (connection != null) {
-//            try {
-//                Statement stmt = connection.createStatement();
-//                ResultSet rs = stmt.executeQuery("SELECT * FROM ClientRestau");
-//
-//                System.out.println("\n📜 Liste des clients :");
-//                while (rs.next()) {
-//                    int id = rs.getInt("id");
-//                    String nom = rs.getString("nom");
-//                    String prenom = rs.getString("prenom");
-//                    System.out.println(id + " - " + nom + " " + prenom);
-//                }
-//
-//                // Fermer les ressources
-//                rs.close();
-//                stmt.close();
-//                connection.close();
-//
-//            } catch (SQLException e) {
-//                System.out.println("❌ Erreur SQL : " + e.getMessage());
-//            }
-//        }
-//    }
-//}
