@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.PasswordField?>
+
+<!-- Conteneur principal -->
+<GridPane xmlns:fx="http://javafx.com/fxml"
+          xmlns="http://javafx.com/javafx/8.0"
+          fx:controller="com.example.profilepage.ProfileController"
+          stylesheets="@css/styles.css"
+          alignment="CENTER"
+          style="-fx-background-color: white; -fx-background-radius: 20; -fx-padding: 20;"
+          prefWidth="350" prefHeight="600">
+
+    <!-- Conteneur vertical pour organiser les éléments -->
+    <VBox spacing="15" alignment="CENTER">
+        <!-- Barre de titre -->
+        <HBox maxWidth="Infinity" style="-fx-background-color: #f2a2b3; -fx-padding: 10; -fx-background-radius: 10;">
+            <Label text="Profile"
+                   style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: white; -fx-padding: 10 0 10 20;"
+                   maxWidth="Infinity"/>
+        </HBox>
+
+        <!-- Image de profil avec cercle -->
+        <StackPane alignment="CENTER">
+            <Circle radius="60" fill="white"/>
+            <ImageView fx:id="profileImage" fitWidth="100" fitHeight="100"/>
+        </StackPane>
+
+        <!-- Bouton pour changer l'image -->
+        <Button fx:id="btnChangeImage" text="Changer l'image"
+                style="-fx-background-color: #f2a2b3; -fx-text-fill: white; -fx-font-weight: bold;
+                       -fx-border-radius: 10; -fx-background-radius: 10; -fx-pref-width: 150;"/>
+
+        <!-- Champs du profil -->
+        <VBox spacing="10" alignment="CENTER">
+            <TextField fx:id="txtNom" promptText="Nom d'utilisateur"
+                       style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: lightgray; -fx-pref-width: 250;"/>
+            <TextField fx:id="txtEmail" promptText="Email"
+                       style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: lightgray; -fx-pref-width: 250;"/>
+            <TextField fx:id="txtAdresse" promptText="Adresse"
+                       style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: lightgray; -fx-pref-width: 250;"/>
+            <TextField fx:id="txtTelephone" promptText="Téléphone"
+                       style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: lightgray; -fx-pref-width: 250;"/>
+            <PasswordField fx:id="txtPassword" promptText="Mot de passe"
+                           style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: lightgray; -fx-pref-width: 250;"/>
+        </VBox>
+
+        <!-- Bouton SAVE -->
+        <Button fx:id="btnSave" text="SAVE"
+                style="-fx-background-color: white; -fx-text-fill: black; -fx-font-weight: bold;
+                       -fx-border-color: black; -fx-border-radius: 10; -fx-background-radius: 10; -fx-pref-width: 100;"/>
+    </VBox>
+</GridPane>

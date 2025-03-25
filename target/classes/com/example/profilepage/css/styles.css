@@ -1,0 +1,73 @@
+/* Styles généraux */
+.root {
+    -fx-background-color: white;
+    -fx-padding: 20;
+}
+
+/* Titre "Profile" */
+.label {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-background-color: #f2a2b3;
+    -fx-padding: 10;
+    -fx-background-radius: 10;
+    -fx-alignment: center;
+}
+
+/* Conteneur du profil */
+GridPane {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-padding: 20;
+}
+
+/* Image de profil */
+.image-view {
+    -fx-background-radius: 50%;
+    -fx-border-radius: 50%;
+    -fx-border-color: lightgray;
+    -fx-border-width: 2;
+}
+
+/* Champs de texte */
+.text-field, .password-field {
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: lightgray;
+    -fx-pref-width: 200;
+    -fx-padding: 5;
+}
+
+/* Icônes (si tu veux ajouter FontAwesomeIconView plus tard) */
+.font-awesome-icon {
+    -fx-fill: #f2a2b3;
+    -fx-size: 20px;
+}
+
+/* Bouton SAVE */
+.button {
+    -fx-background-color: white;
+    -fx-text-fill: black;
+    -fx-border-color: black;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-pref-width: 100;
+    -fx-padding: 5;
+}
+.button:hover {
+    -fx-background-color: #f2a2b3;
+    -fx-text-fill: white;
+}
+
+/* Conteneur VBox */
+.vbox {
+    -fx-spacing: 15;
+    -fx-alignment: center;
+}
+
+/* Conteneur HBox */
+.hbox {
+    -fx-spacing: 10;
+    -fx-alignment: center-left;
+}
