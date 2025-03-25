@@ -1,0 +1,93 @@
+.root {
+    -fx-background-color: #ffffff;
+}
+
+.text-wrapper-12 {
+    -fx-font-family: "Itim, Arial, sans-serif";
+    -fx-font-size: 20px;
+    -fx-text-fill: #000000;
+}
+
+.text-wrapper-2, .text-wrapper-3, .text-wrapper-6, .text-wrapper-7 {
+    -fx-font-family: "Itim, Arial, sans-serif";
+    -fx-font-size: 14px;
+    -fx-text-fill: #918e8e;
+}
+
+.overlap-group {
+    -fx-background-color: #fcedf1;
+    -fx-background-radius: 20;
+    -fx-pref-width: 316px;
+    -fx-pref-height: 35px;
+    -fx-prompt-text-fill: #b5b3b3;
+    -fx-font-family: "Itim, Arial, sans-serif";
+    -fx-font-size: 14px;
+}
+
+.div-wrapper {
+    -fx-background-color: #fcedf1;
+    -fx-background-radius: 20;
+    -fx-pref-width: 170px;
+    -fx-pref-height: 35px;
+    -fx-prompt-text-fill: #b5b3b3;
+    -fx-font-family: "Itim, Arial, sans-serif";
+    -fx-font-size: 14px;
+}
+
+.overlap-group-2 {
+    -fx-background-color: #fcedf1;
+    -fx-background-radius: 20;
+    -fx-pref-width: 146px;
+    -fx-pref-height: 35px;
+    -fx-prompt-text-fill: #b5b3b3;
+    -fx-font-family: "Itim, Arial, sans-serif";
+    -fx-font-size: 14px;
+}
+
+.group-9 {
+    -fx-background-color: #fcedf1;
+    -fx-background-radius: 20;
+    -fx-pref-width: 146px;
+    -fx-pref-height: 35px;
+    -fx-prompt-text-fill: #b5b3b3;
+    -fx-font-family: "Itim, Arial, sans-serif";
+    -fx-font-size: 14px;
+}
+
+.overlap-group-3 {
+    -fx-background-color: #fcedf1;
+    -fx-background-radius: 20;
+    -fx-pref-width: 150px;
+    -fx-pref-height: 35px;
+    -fx-prompt-text-fill: #b5b3b3;
+    -fx-font-family: "Itim, Arial, sans-serif";
+    -fx-font-size: 14px;
+}
+
+.enter-password-wrapper {
+    -fx-background-color: #fcedf1;
+    -fx-background-radius: 20;
+    -fx-pref-width: 302px;
+    -fx-pref-height: 35px;
+    -fx-prompt-text-fill: #b5b3b3;
+    -fx-font-family: "Itim, Arial, sans-serif";
+    -fx-font-size: 14px;
+}
+
+.overlap {
+    -fx-background-color: #d9d9d9;
+    -fx-background-radius: 10;
+    -fx-pref-width: 122px;
+    -fx-pref-height: 33px;
+    -fx-font-family: "Itim, Arial, sans-serif";
+    -fx-font-size: 14px;
+    -fx-text-fill: #ffffff;
+}
+
+.button {
+    -fx-font-family: "Itim, Arial, sans-serif";
+    -fx-font-size: 14px;
+    -fx-text-fill: #3160d9;
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}

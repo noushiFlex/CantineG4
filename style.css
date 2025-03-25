@@ -1,0 +1,71 @@
+/* style.css */
+.root {
+    -fx-background-color: #ffffff;
+    -fx-font-family: "Itim, Arial, sans-serif";
+}
+
+.login-form {
+    -fx-font-family: "Itim, Arial, sans-serif";
+    -fx-font-size: 20px;
+    -fx-text-fill: #000000;
+    -fx-alignment: center;
+}
+
+.text-wrapper-2 {
+    -fx-font-family: "Itim, Arial, sans-serif";
+    -fx-font-size: 14px;
+    -fx-text-fill: #918e8e;
+    -fx-padding: 0 0 5 12;
+}
+
+.text-field, .password-field {
+    -fx-background-color: #fcedf1;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-font-family: "Itim, Arial, sans-serif";
+    -fx-font-size: 14px;
+    -fx-text-fill: #b5b3b3;
+    -fx-padding: 9;
+    -fx-pref-width: 316;
+}
+
+.sign-in-button {
+    -fx-background-color: #d9d9d9;
+    -fx-text-fill: #ffffff;
+    -fx-font-family: "Itim, Arial, sans-serif";
+    -fx-font-size: 15px;
+    -fx-background-radius: 17;
+    -fx-padding: 8 61;
+    -fx-pref-width: 166;
+    -fx-cursor: hand;
+}
+
+.sign-in-button:hover {
+    -fx-background-color: #b0b0b0;
+}
+
+.dont-have-a-account {
+    -fx-font-family: "Itim, Arial, sans-serif";
+    -fx-font-size: 14px;
+    -fx-text-fill: #000000;
+    -fx-alignment: center;
+}
+
+.success {
+    -fx-font-family: "Itim, Arial, sans-serif";
+    -fx-text-fill: #27ae60;
+    -fx-font-size: 14px;
+}
+
+.error {
+    -fx-font-family: "Itim, Arial, sans-serif";
+    -fx-text-fill: #e74c3c;
+    -fx-font-size: 14px;
+}
+
+.title {
+    -fx-font-family: "Itim, Arial, sans-serif";
+    -fx-font-size: 20px;
+    -fx-text-fill: #2c3e50;
+    -fx-font-weight: bold;
+}

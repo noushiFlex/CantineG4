@@ -1,0 +1,15 @@
+.root {
+    -fx-background-color: white;
+}
+
+.search-field {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(145.56, 142.77, 142.77, 0.50);
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+    -fx-pref-width: 195px;
+    -fx-pref-height: 27px;
+    -fx-prompt-text-fill: #BDBDBD;
+    -fx-font-family: "Itim";
+    -fx-font-size: 12px;
+}
