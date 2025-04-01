@@ -1,7 +1,8 @@
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class GestionDesCommandes {
+    static ArrayList<CommandeRestau> commandes = new ArrayList<>();
     static Scanner scanner = new Scanner(System.in);
 
     public static void main() {
@@ -45,50 +46,15 @@ public class GestionDesCommandes {
     }
 
     public static void passerCommande() {
-        // Afficher la liste des clients
-        List<ClientRestau> clients = ClientDAO.getAllClients();
-        if (clients.isEmpty()) {
-            System.out.println("❌ Aucun client n'est enregistré. Impossible de passer une commande.");
-            return;
-        }
-        
-        System.out.println("\n📋 Choisissez un client :");
-        for (ClientRestau client : clients) {
-            client.afficher();
-        }
-        
-        System.out.print("Entrez l'ID du client qui passe la commande : ");
-        int clientId = scanner.nextInt();
-        scanner.nextLine(); // Consommer la ligne
-        
-        ClientRestau client = ClientDAO.getClientById(clientId);
-        if (client == null) {
-            System.out.println("❌ Client non trouvé ! Commande annulée.");
-            return;
-        }
-        
         CommandeRestau commande = new CommandeRestau();
         int continuer = 1;
-        
-        // Afficher la liste des plats disponibles
-        List<PlatRestau> platsDisponibles = PlatDAO.getAllPlats();
-        if (platsDisponibles.isEmpty()) {
-            System.out.println("❌ Aucun plat n'est disponible. Impossible de passer une commande.");
-            return;
-        }
-        
-        System.out.println("\n📋 Plats disponibles :");
-        for (PlatRestau plat : platsDisponibles) {
-            System.out.println(plat);
-        }
-        
         while (continuer == 1) {
             System.out.print("Entrez l'ID du plat à ajouter à la commande : ");
             int platId = scanner.nextInt();
             scanner.nextLine(); // Consommer la ligne
 
             // Recherche du plat par son ID
-            PlatRestau plat = PlatDAO.getPlatById(platId);
+            PlatRestau plat = trouverPlatParId(platId);
             if (plat != null) {
                 commande.ajouterPlat(plat);
                 System.out.println("✅ Plat ajouté à la commande !");
@@ -101,47 +67,46 @@ public class GestionDesCommandes {
             scanner.nextLine(); // Consommer la ligne
         }
 
-        if (commande.getPlatsCommandes().isEmpty()) {
-            System.out.println("❌ Aucun plat n'a été ajouté à la commande. Commande annulée.");
-            return;
-        }
-        
-        // Ajouter la commande à la base de données
-        int commandeId = CommandeDAO.ajouterCommande(commande, clientId);
-        
-        if (commandeId > 0) {
-            System.out.println("✅ Commande passée avec succès ! ID: " + commandeId);
-            commande.afficherCommande();
-        } else {
-            System.out.println("❌ Erreur lors de l'enregistrement de la commande.");
-        }
+        commandes.add(commande);
+        System.out.println("✅ Commande passée avec succès !");
+        commande.afficherCommande();
     }
 
     public static void afficherCommandes() {
-        List<CommandeDAO.CommandeInfo> commandes = CommandeDAO.getAllCommandes();
-
         if (commandes.isEmpty()) {
-            System.out.println("❌ Aucune commande enregistrée.");
+            System.out.println("❌ Aucun plat commandé.");
             return;
         }
-
         System.out.println("\n📋 Liste des commandes :");
-        for (CommandeDAO.CommandeInfo commande : commandes) {
-            System.out.println(commande);
+        for (int i = 0; i < commandes.size(); i++) {
+            System.out.println("Commande " + (i + 1) + " - Total : " + commandes.get(i).getTotal() + " FCFA");
         }
     }
 
     public static void afficherCommandeDetail() {
-        System.out.print("Entrez l'ID de la commande : ");
-        int id = scanner.nextInt();
-        scanner.nextLine(); // Consommer la ligne
-        
-        CommandeDAO.CommandeDetail commande = CommandeDAO.getCommandeById(id);
-        
-        if (commande != null) {
-            commande.afficherDetail();
+        System.out.print("Entrez le numéro de la commande : ");
+        int numCommande = scanner.nextInt() - 1;
+        if (numCommande >= 0 && numCommande < commandes.size()) {
+            CommandeRestau commande = commandes.get(numCommande);
+            commande.afficherCommande();
         } else {
             System.out.println("❌ Commande non trouvée !");
         }
+    }
+
+    // Méthode pour trouver un plat par ID (à ajouter dans GestionDesPlats par exemple)
+    public static PlatRestau trouverPlatParId(int id) {
+        // Supposons qu'on a une liste globale des plats disponibles (plutôt que de recréer une base de données)
+        ArrayList<PlatRestau> platsDisponibles = new ArrayList<>();
+        platsDisponibles.add(new PlatRestau(1, "Poulet rôti", 5000));
+        platsDisponibles.add(new PlatRestau(2, "Poisson braisé", 4500));
+        platsDisponibles.add(new PlatRestau(3, "Frites maison", 2500));
+
+        for (PlatRestau plat : platsDisponibles) {
+            if (plat.getId() == id) {
+                return plat;
+            }
+        }
+        return null;
     }
 }
