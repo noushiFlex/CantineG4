@@ -1,0 +1,110 @@
+.root {
+    -fx-font-family: 'Segoe UI', sans-serif;
+    -fx-background-color: #f5f6fa;
+}
+
+/* Titres */
+.title {
+    -fx-font-size: 24px;
+    -fx-text-fill: #2d3436;
+    -fx-font-weight: 800;
+    -fx-padding: 0 0 15px 0;
+}
+
+/* Containers */
+.login-container {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 15px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+    -fx-border-radius: 15px;
+}
+
+/* Boutons */
+.button {
+    -fx-background-color: #0984e3;
+    -fx-text-fill: white;
+    -fx-font-weight: 700;
+    -fx-background-radius: 8px;
+    -fx-padding: 10px 25px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(9,132,227,0.3), 8, 0, 0, 1);
+}
+
+.button:hover {
+    -fx-background-color: #0873c4;
+}
+
+.button:pressed {
+    -fx-background-color: #0767ad;
+}
+
+.primary-button {
+    -fx-background-color: linear-gradient(to right, #6c5ce7, #0984e3);
+}
+
+/* Champs de saisie */
+.text-field, .password-field, .combo-box {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 5px;
+    -fx-border-color: #dfe6e9;
+    -fx-border-radius: 5px;
+    -fx-padding: 8px 12px;
+    -fx-font-size: 14px;
+}
+
+.text-field:focused, .password-field:focused {
+    -fx-border-color: #74b9ff;
+    -fx-effect: dropshadow(three-pass-box, rgba(116,185,255,0.3), 10, 0, 0, 0);
+}
+
+/* Labels */
+.icon-label {
+    -fx-text-fill: #636e72;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+}
+
+.error-label {
+    -fx-text-fill: #d63031;
+    -fx-font-weight: 700;
+}
+
+/* Séparateurs */
+.separator .line {
+    -fx-border-color: #dfe6e9;
+    -fx-border-width: 1px;
+}
+
+/* Listes */
+.list-view {
+    -fx-background-color: white;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 0);
+}
+
+.list-cell {
+    -fx-padding: 12px 15px;
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+}
+
+.list-cell:filled:hover {
+    -fx-background-color: #f8f9fa;
+}
+
+/* Dialogues */
+.dialog-pane {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 15px;
+    -fx-padding: 20px;
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: transparent;
+}
+
+.dialog-pane .content.label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #2d3436;
+}

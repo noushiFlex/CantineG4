@@ -5,7 +5,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.HashMap;
@@ -18,42 +17,34 @@ public class Main extends Application {
     
     @Override
     public void start(Stage primaryStage) {
-        // Configuration fenêtre principale
         primaryStage.setTitle("Système de Gestion de la Cantine");
-        
-        // Scene de connexion
         showLoginScene(primaryStage);
     }
     
     private void showLoginScene(Stage primaryStage) {
-        // Création du formulaire de connexion
         VBox loginLayout = new VBox(10);
-        loginLayout.setPadding(new Insets(20, 20, 20, 20));
+        loginLayout.setPadding(new Insets(20));
         loginLayout.setAlignment(Pos.CENTER);
-        
-        // Titre
+        loginLayout.getStyleClass().add("login-container");
+
         Label titleLabel = new Label("CONNEXION");
-        titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        titleLabel.getStyleClass().add("title");
         
-        // Champs de saisie
         Label userLabel = new Label("👤 Nom d'utilisateur:");
+        userLabel.getStyleClass().add("icon-label");
         TextField userField = new TextField();
-        userField.setPromptText("Entrez votre nom d'utilisateur");
         
         Label passLabel = new Label("🔑 Mot de passe:");
+        passLabel.getStyleClass().add("icon-label");
         PasswordField passField = new PasswordField();
-        passField.setPromptText("Entrez votre mot de passe");
         
-        // Bouton de connexion
         Button loginButton = new Button("Se connecter");
-        loginButton.setDefaultButton(true);
+        loginButton.getStyleClass().add("primary-button");
         
-        // Message d'erreur (initialement invisible)
-        Label errorLabel = new Label("❌ Nom d'utilisateur ou mot de passe incorrect !");
-        errorLabel.setStyle("-fx-text-fill: red;");
+        Label errorLabel = new Label("❌ Identifiants incorrects !");
+        errorLabel.getStyleClass().add("error-label");
         errorLabel.setVisible(false);
-        
-        // Action du bouton de connexion
+
         loginButton.setOnAction(e -> {
             if (userField.getText().equals("admin") && passField.getText().equals("admin")) {
                 showMainMenu(primaryStage);
@@ -62,61 +53,51 @@ public class Main extends Application {
             }
         });
         
-        // Ajouter tous les éléments au layout
         loginLayout.getChildren().addAll(
-            titleLabel, 
-            new Separator(), 
-            userLabel, userField, 
-            passLabel, passField,
-            loginButton,
-            errorLabel
+            titleLabel, new Separator(), userLabel, userField, 
+            passLabel, passField, loginButton, errorLabel
         );
         
-        // Créer et afficher la scène
         Scene loginScene = new Scene(loginLayout, 350, 300);
+        loginScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
         primaryStage.setScene(loginScene);
         primaryStage.show();
     }
     
     private void showMainMenu(Stage primaryStage) {
-        // Layout principal
         VBox mainLayout = new VBox(15);
-        mainLayout.setPadding(new Insets(20, 20, 20, 20));
+        mainLayout.setPadding(new Insets(20));
         mainLayout.setAlignment(Pos.CENTER);
+
+        Label titleLabel = new Label("MENU PRINCIPAL");
+        titleLabel.getStyleClass().add("title");
         
-        // Titre
-        Label titleLabel = new Label("MENU DE LA CANTINE");
-        titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        Button[] buttons = {
+            createMenuButton("Gérer les plats 🍽️"),
+            createMenuButton("Gérer les commandes 🛒"),
+            createMenuButton("Gérer les clients 👥"),
+            createMenuButton("Gérer le personnel 🧑🍳"),
+            createMenuButton("Quitter ❌")
+        };
+
+        buttons[0].setOnAction(e -> showGestionPlats(primaryStage));
+        buttons[1].setOnAction(e -> showGestionCommandes(primaryStage));
+        buttons[2].setOnAction(e -> showGestionClients(primaryStage));
+        buttons[3].setOnAction(e -> showGestionPersonnels(primaryStage));
+        buttons[4].setOnAction(e -> primaryStage.close());
+
+        mainLayout.getChildren().addAll(titleLabel, new Separator());
+        mainLayout.getChildren().addAll(buttons);
         
-        // Boutons du menu principal
-        Button platsButton = createMenuButton("1. Afficher et gérer les plats 🍽️");
-        Button commandesButton = createMenuButton("2. Voir les commandes 🛒");
-        Button clientsButton = createMenuButton("3. Voir les clients 👥");
-        Button personnelsButton = createMenuButton("4. Voir le personnel 🧑‍🍳");
-        Button quitterButton = createMenuButton("5. Quitter ❌");
-        
-        // Actions des boutons
-        platsButton.setOnAction(e -> showGestionPlats(primaryStage));
-        commandesButton.setOnAction(e -> showGestionCommandes(primaryStage));
-        clientsButton.setOnAction(e -> showGestionClients(primaryStage));
-        personnelsButton.setOnAction(e -> showGestionPersonnels(primaryStage));
-        quitterButton.setOnAction(e -> primaryStage.close());
-        
-        // Ajouter tous les éléments au layout
-        mainLayout.getChildren().addAll(
-            titleLabel,
-            new Separator(),
-            platsButton,
-            commandesButton,
-            clientsButton,
-            personnelsButton,
-            quitterButton
-        );
-        
-        // Créer et afficher la scène
-        Scene mainScene = new Scene(mainLayout, 400, 350);
+        Scene mainScene = new Scene(mainLayout, 500, 400);
+        mainScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
         primaryStage.setScene(mainScene);
     }
+
+    // Les méthodes de gestion (showGestionPlats, showGestionCommandes, etc.) 
+    // restent identiques à la version précédente mais avec l'ajout des styles CSS
+    // ...
+    
     
     // Méthode pour créer un bouton stylisé pour le menu
     private Button createMenuButton(String text) {
@@ -159,15 +140,23 @@ public class Main extends Application {
         dialog.setTitle("Ajouter un plat");
         dialog.setHeaderText("Saisissez les informations du nouveau plat");
         
+        // Appliquer le style au DialogPane
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        
         // Boutons
         ButtonType ajouterButtonType = new ButtonType("Ajouter", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(ajouterButtonType, ButtonType.CANCEL);
+        dialogPane.getButtonTypes().addAll(ajouterButtonType, ButtonType.CANCEL);
+        
+        // Style les boutons
+        Button ajouterButton = (Button) dialogPane.lookupButton(ajouterButtonType);
+        ajouterButton.getStyleClass().add("action-button");
         
         // Grille pour le formulaire
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
+        grid.setPadding(new Insets(20, 20, 10, 10));
         
         TextField nomField = new TextField();
         nomField.setPromptText("Nom du plat");
@@ -179,7 +168,7 @@ public class Main extends Application {
         grid.add(new Label("Prix:"), 0, 1);
         grid.add(prixField, 1, 1);
         
-        dialog.getDialogPane().setContent(grid);
+        dialogPane.setContent(grid);
         
         // Validation et conversion des résultats
         dialog.setResultConverter(dialogButton -> {
