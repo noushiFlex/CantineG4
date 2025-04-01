@@ -3,6 +3,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import java.util.List;
@@ -11,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.scene.control.cell.CheckBoxListCell;
 
 public class Main extends Application {
     
@@ -33,13 +33,15 @@ public class Main extends Application {
         Label userLabel = new Label("👤 Nom d'utilisateur:");
         userLabel.getStyleClass().add("icon-label");
         TextField userField = new TextField();
+        userField.getStyleClass().add("text-field");
         
         Label passLabel = new Label("🔑 Mot de passe:");
         passLabel.getStyleClass().add("icon-label");
         PasswordField passField = new PasswordField();
+        passField.getStyleClass().add("password-field");
         
         Button loginButton = new Button("Se connecter");
-        loginButton.getStyleClass().add("primary-button");
+        loginButton.getStyleClass().addAll("button", "primary-button");
         
         Label errorLabel = new Label("❌ Identifiants incorrects !");
         errorLabel.getStyleClass().add("error-label");
@@ -94,32 +96,22 @@ public class Main extends Application {
         primaryStage.setScene(mainScene);
     }
 
-    // Les méthodes de gestion (showGestionPlats, showGestionCommandes, etc.) 
-    // restent identiques à la version précédente mais avec l'ajout des styles CSS
-    // ...
-    
-    
-    // Méthode pour créer un bouton stylisé pour le menu
-    private Button createMenuButton(String text) {
-        Button button = new Button(text);
-        button.setPrefWidth(250);
-        button.setStyle("-fx-font-size: 14px;");
-        return button;
-    }
-    
-    // Affiche la vue de gestion des plats
     private void showGestionPlats(Stage primaryStage) {
         VBox layout = createModuleLayout("Gestion des Plats");
         
         Button ajouterButton = new Button("Ajouter un plat");
+        ajouterButton.getStyleClass().add("button");
         Button supprimerButton = new Button("Supprimer un plat");
+        supprimerButton.getStyleClass().add("button");
         Button modifierButton = new Button("Modifier un plat");
+        modifierButton.getStyleClass().add("button");
         Button listerButton = new Button("Lister les plats");
+        listerButton.getStyleClass().add("button");
         Button retourButton = new Button("Retour au menu principal");
+        retourButton.getStyleClass().add("button");
         
         retourButton.setOnAction(e -> showMainMenu(primaryStage));
         
-        // Implémentations fonctionnelles
         ajouterButton.setOnAction(e -> showAjouterPlatDialog());
         supprimerButton.setOnAction(e -> showSupprimerPlatDialog());
         modifierButton.setOnAction(e -> showModifierPlatDialog());
@@ -131,28 +123,27 @@ public class Main extends Application {
         );
         
         Scene scene = new Scene(layout, 400, 350);
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
         primaryStage.setScene(scene);
     }
     
-    // Dialogue pour ajouter un plat
     private void showAjouterPlatDialog() {
         Dialog<PlatRestau> dialog = new Dialog<>();
         dialog.setTitle("Ajouter un plat");
         dialog.setHeaderText("Saisissez les informations du nouveau plat");
         
-        // Appliquer le style au DialogPane
         DialogPane dialogPane = dialog.getDialogPane();
         dialogPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        dialogPane.getStyleClass().add("dialog-pane");
         
-        // Boutons
         ButtonType ajouterButtonType = new ButtonType("Ajouter", ButtonBar.ButtonData.OK_DONE);
         dialogPane.getButtonTypes().addAll(ajouterButtonType, ButtonType.CANCEL);
         
-        // Style les boutons
         Button ajouterButton = (Button) dialogPane.lookupButton(ajouterButtonType);
-        ajouterButton.getStyleClass().add("action-button");
+        ajouterButton.getStyleClass().addAll("button", "primary-button");
+        Button cancelButton = (Button) dialogPane.lookupButton(ButtonType.CANCEL);
+        cancelButton.getStyleClass().add("button");
         
-        // Grille pour le formulaire
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
@@ -160,28 +151,32 @@ public class Main extends Application {
         
         TextField nomField = new TextField();
         nomField.setPromptText("Nom du plat");
+        nomField.getStyleClass().add("text-field");
         TextField prixField = new TextField();
         prixField.setPromptText("Prix en FCFA");
+        prixField.getStyleClass().add("text-field");
         
-        grid.add(new Label("Nom:"), 0, 0);
+        Label nomLabel = new Label("Nom:");
+        nomLabel.getStyleClass().add("icon-label");
+        Label prixLabel = new Label("Prix:");
+        prixLabel.getStyleClass().add("icon-label");
+        
+        grid.add(nomLabel, 0, 0);
         grid.add(nomField, 1, 0);
-        grid.add(new Label("Prix:"), 0, 1);
+        grid.add(prixLabel, 0, 1);
         grid.add(prixField, 1, 1);
         
         dialogPane.setContent(grid);
         
-        // Validation et conversion des résultats
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == ajouterButtonType) {
                 try {
                     String nom = nomField.getText();
                     double prix = Double.parseDouble(prixField.getText());
-                    
                     if (nom.isEmpty()) {
                         showAlert(Alert.AlertType.ERROR, "Erreur", "Le nom du plat ne peut pas être vide.");
                         return null;
                     }
-                    
                     int id = PlatDAO.getLastPlatId() + 1;
                     return new PlatRestau(id, nom, prix);
                 } catch (NumberFormatException e) {
@@ -193,7 +188,6 @@ public class Main extends Application {
         });
         
         Optional<PlatRestau> result = dialog.showAndWait();
-        
         result.ifPresent(plat -> {
             boolean success = PlatDAO.ajouterPlat(plat);
             if (success) {
@@ -204,10 +198,8 @@ public class Main extends Application {
         });
     }
     
-    // Dialogue pour supprimer un plat
     private void showSupprimerPlatDialog() {
         List<PlatRestau> plats = PlatDAO.getAllPlats();
-        
         if (plats.isEmpty()) {
             showAlert(Alert.AlertType.INFORMATION, "Information", "❌ Aucun plat disponible.");
             return;
@@ -217,14 +209,23 @@ public class Main extends Application {
         dialog.setTitle("Supprimer un plat");
         dialog.setHeaderText("Sélectionnez le plat à supprimer");
         
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        dialogPane.getStyleClass().add("dialog-pane");
+        
         ButtonType supprimerButtonType = new ButtonType("Supprimer", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(supprimerButtonType, ButtonType.CANCEL);
+        dialogPane.getButtonTypes().addAll(supprimerButtonType, ButtonType.CANCEL);
+        
+        Button supprimerButton = (Button) dialogPane.lookupButton(supprimerButtonType);
+        supprimerButton.getStyleClass().addAll("button", "primary-button");
+        Button cancelButton = (Button) dialogPane.lookupButton(ButtonType.CANCEL);
+        cancelButton.getStyleClass().add("button");
         
         ComboBox<PlatRestau> platsCombo = new ComboBox<>();
         platsCombo.getItems().addAll(plats);
         platsCombo.setPromptText("Sélectionnez un plat");
+        platsCombo.getStyleClass().add("combo-box");
         
-        // Définir comment afficher les plats dans la combobox
         platsCombo.setCellFactory(lv -> new ListCell<PlatRestau>() {
             @Override
             protected void updateItem(PlatRestau item, boolean empty) {
@@ -245,7 +246,7 @@ public class Main extends Application {
         vbox.getChildren().add(platsCombo);
         vbox.setPadding(new Insets(20));
         
-        dialog.getDialogPane().setContent(vbox);
+        dialogPane.setContent(vbox);
         
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == supprimerButtonType) {
@@ -255,47 +256,61 @@ public class Main extends Application {
         });
         
         Optional<PlatRestau> result = dialog.showAndWait();
+        result.ifPresent(plat -> extracted(plat));
+    }
+
+    private void extracted(PlatRestau plat) {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.getDialogPane().getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        confirm.getDialogPane().getStyleClass().add("dialog-pane");
+        confirm.setTitle("Confirmation");
+        confirm.setHeaderText("Êtes-vous sûr de vouloir supprimer ce plat ?");
+        confirm.setContentText(plat.toString());
         
-        result.ifPresent(plat -> {
-            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-            confirm.setTitle("Confirmation");
-            confirm.setHeaderText("Êtes-vous sûr de vouloir supprimer ce plat ?");
-            confirm.setContentText(plat.toString());
-            
-            Optional<ButtonType> confirmation = confirm.showAndWait();
-            if (confirmation.isPresent() && confirmation.get() == ButtonType.OK) {
-                boolean success = PlatDAO.deletePlat(plat.getId());
-                if (success) {
-                    showAlert(Alert.AlertType.INFORMATION, "Succès", "✅ Plat supprimé avec succès !");
-                } else {
-                    showAlert(Alert.AlertType.ERROR, "Erreur", "❌ Erreur lors de la suppression du plat.");
-                }
+        Button okButton = (Button) confirm.getDialogPane().lookupButton(ButtonType.OK);
+        okButton.getStyleClass().add("button");
+        Button cancelButton = (Button) confirm.getDialogPane().lookupButton(ButtonType.CANCEL);
+        cancelButton.getStyleClass().add("button");
+        
+        Optional<ButtonType> confirmation = confirm.showAndWait();
+        if (confirmation.isPresent() && confirmation.get() == ButtonType.OK) {
+            boolean success = PlatDAO.deletePlat(plat.getId());
+            if (success) {
+                showAlert(Alert.AlertType.INFORMATION, "Succès", "✅ Plat supprimé avec succès !");
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "❌ Erreur lors de la suppression du plat.");
             }
-        });
+        }
     }
     
-    // Dialogue pour modifier un plat
     private void showModifierPlatDialog() {
         List<PlatRestau> plats = PlatDAO.getAllPlats();
-        
         if (plats.isEmpty()) {
             showAlert(Alert.AlertType.INFORMATION, "Information", "❌ Aucun plat disponible.");
             return;
         }
         
-        // Dialogue de sélection du plat
         Dialog<PlatRestau> selectionDialog = new Dialog<>();
         selectionDialog.setTitle("Modifier un plat");
         selectionDialog.setHeaderText("Sélectionnez le plat à modifier");
         
+        DialogPane selectionPane = selectionDialog.getDialogPane();
+        selectionPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        selectionPane.getStyleClass().add("dialog-pane");
+        
         ButtonType selectionnerButtonType = new ButtonType("Sélectionner", ButtonBar.ButtonData.OK_DONE);
-        selectionDialog.getDialogPane().getButtonTypes().addAll(selectionnerButtonType, ButtonType.CANCEL);
+        selectionPane.getButtonTypes().addAll(selectionnerButtonType, ButtonType.CANCEL);
+        
+        Button selectionnerButton = (Button) selectionPane.lookupButton(selectionnerButtonType);
+        selectionnerButton.getStyleClass().addAll("button", "primary-button");
+        Button cancelButton1 = (Button) selectionPane.lookupButton(ButtonType.CANCEL);
+        cancelButton1.getStyleClass().add("button");
         
         ComboBox<PlatRestau> platsCombo = new ComboBox<>();
         platsCombo.getItems().addAll(plats);
         platsCombo.setPromptText("Sélectionnez un plat");
+        platsCombo.getStyleClass().add("combo-box");
         
-        // Définir comment afficher les plats dans la combobox
         platsCombo.setCellFactory(lv -> new ListCell<PlatRestau>() {
             @Override
             protected void updateItem(PlatRestau item, boolean empty) {
@@ -315,8 +330,7 @@ public class Main extends Application {
         VBox vbox = new VBox(10);
         vbox.getChildren().add(platsCombo);
         vbox.setPadding(new Insets(20));
-        
-        selectionDialog.getDialogPane().setContent(vbox);
+        selectionPane.setContent(vbox);
         
         selectionDialog.setResultConverter(dialogButton -> {
             if (dialogButton == selectionnerButtonType) {
@@ -326,15 +340,22 @@ public class Main extends Application {
         });
         
         Optional<PlatRestau> selectionResult = selectionDialog.showAndWait();
-        
         selectionResult.ifPresent(platSelectionne -> {
-            // Dialogue de modification
             Dialog<PlatRestau> modifDialog = new Dialog<>();
             modifDialog.setTitle("Modifier un plat");
             modifDialog.setHeaderText("Modifiez les informations du plat");
             
+            DialogPane modifPane = modifDialog.getDialogPane();
+            modifPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+            modifPane.getStyleClass().add("dialog-pane");
+            
             ButtonType modifierButtonType = new ButtonType("Modifier", ButtonBar.ButtonData.OK_DONE);
-            modifDialog.getDialogPane().getButtonTypes().addAll(modifierButtonType, ButtonType.CANCEL);
+            modifPane.getButtonTypes().addAll(modifierButtonType, ButtonType.CANCEL);
+            
+            Button modifierButton = (Button) modifPane.lookupButton(modifierButtonType);
+            modifierButton.getStyleClass().addAll("button", "primary-button");
+            Button cancelButton2 = (Button) modifPane.lookupButton(ButtonType.CANCEL);
+            cancelButton2.getStyleClass().add("button");
             
             GridPane grid = new GridPane();
             grid.setHgap(10);
@@ -342,26 +363,31 @@ public class Main extends Application {
             grid.setPadding(new Insets(20, 150, 10, 10));
             
             TextField nomField = new TextField(platSelectionne.getNom());
+            nomField.getStyleClass().add("text-field");
             TextField prixField = new TextField(String.valueOf(platSelectionne.getPrix()));
+            prixField.getStyleClass().add("text-field");
             
-            grid.add(new Label("Nom:"), 0, 0);
+            Label nomLabel = new Label("Nom:");
+            nomLabel.getStyleClass().add("icon-label");
+            Label prixLabel = new Label("Prix:");
+            prixLabel.getStyleClass().add("icon-label");
+            
+            grid.add(nomLabel, 0, 0);
             grid.add(nomField, 1, 0);
-            grid.add(new Label("Prix:"), 0, 1);
+            grid.add(prixLabel, 0, 1);
             grid.add(prixField, 1, 1);
             
-            modifDialog.getDialogPane().setContent(grid);
+            modifPane.setContent(grid);
             
             modifDialog.setResultConverter(dialogButton -> {
                 if (dialogButton == modifierButtonType) {
                     try {
                         String nom = nomField.getText();
                         double prix = Double.parseDouble(prixField.getText());
-                        
                         if (nom.isEmpty()) {
                             showAlert(Alert.AlertType.ERROR, "Erreur", "Le nom du plat ne peut pas être vide.");
                             return null;
                         }
-                        
                         platSelectionne.setNom(nom);
                         platSelectionne.setPrix(prix);
                         return platSelectionne;
@@ -374,7 +400,6 @@ public class Main extends Application {
             });
             
             Optional<PlatRestau> modifResult = modifDialog.showAndWait();
-            
             modifResult.ifPresent(platModifie -> {
                 boolean success = PlatDAO.updatePlat(platModifie);
                 if (success) {
@@ -386,60 +411,64 @@ public class Main extends Application {
         });
     }
     
-    // Dialogue pour lister les plats
     private void showListerPlatsDialog() {
         List<PlatRestau> plats = PlatDAO.getAllPlats();
         
         Dialog<Void> dialog = new Dialog<>();
         dialog.setTitle("Liste des plats");
         dialog.setHeaderText("Voici tous les plats disponibles");
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        dialogPane.getStyleClass().add("dialog-pane");
+        dialogPane.getButtonTypes().add(ButtonType.OK);
+        
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        okButton.getStyleClass().add("button");
         
         if (plats.isEmpty()) {
-            dialog.setContentText("❌ Aucun plat n'est disponible.");
+            Label emptyLabel = new Label("❌ Aucun plat n'est disponible.");
+            emptyLabel.getStyleClass().add("error-label");
+            dialogPane.setContent(emptyLabel);
         } else {
             ListView<PlatRestau> platListView = new ListView<>();
+            platListView.getStyleClass().add("list-view");
             platListView.getItems().addAll(plats);
             platListView.setCellFactory(lv -> new ListCell<PlatRestau>() {
                 @Override
                 protected void updateItem(PlatRestau item, boolean empty) {
                     super.updateItem(item, empty);
                     setText(empty ? "" : item.toString());
+                    if (!empty) {
+                        getStyleClass().add("list-cell");
+                    }
                 }
             });
             
             VBox vbox = new VBox(10);
             vbox.getChildren().add(platListView);
             vbox.setPadding(new Insets(20));
-            
-            dialog.getDialogPane().setContent(vbox);
-            dialog.getDialogPane().setPrefSize(400, 400);
+            dialogPane.setContent(vbox);
+            dialogPane.setPrefSize(400, 400);
         }
         
         dialog.showAndWait();
     }
     
-    // Méthode utilitaire pour afficher des alertes
-    private void showAlert(Alert.AlertType alertType, String title, String content) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-    
-    // Affiche la vue de gestion des commandes
     private void showGestionCommandes(Stage primaryStage) {
         VBox layout = createModuleLayout("Gestion des Commandes");
         
         Button passerButton = new Button("Passer une commande");
+        passerButton.getStyleClass().add("button");
         Button afficherButton = new Button("Afficher toutes les commandes");
+        afficherButton.getStyleClass().add("button");
         Button detailButton = new Button("Afficher une commande spécifique");
+        detailButton.getStyleClass().add("button");
         Button retourButton = new Button("Retour au menu principal");
+        retourButton.getStyleClass().add("button");
         
         retourButton.setOnAction(e -> showMainMenu(primaryStage));
         
-        // Implémentation des actions
         passerButton.setOnAction(e -> showPasserCommandeDialog());
         afficherButton.setOnAction(e -> showListerCommandesDialog());
         detailButton.setOnAction(e -> showCommandeDetailDialog());
@@ -450,38 +479,44 @@ public class Main extends Application {
         );
         
         Scene scene = new Scene(layout, 400, 350);
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
         primaryStage.setScene(scene);
     }
     
-    // Dialogue pour passer une nouvelle commande
     private void showPasserCommandeDialog() {
-        // Vérification des clients disponibles
         List<ClientRestau> clients = ClientDAO.getAllClients();
         if (clients.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Attention", "❌ Aucun client n'est enregistré. Impossible de passer une commande.");
+            showAlert(Alert.AlertType.WARNING, "Attention", "❌ Aucun client n'est enregistré.");
             return;
         }
         
-        // Vérification des plats disponibles
         List<PlatRestau> platsDisponibles = PlatDAO.getAllPlats();
         if (platsDisponibles.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Attention", "❌ Aucun plat n'est disponible. Impossible de passer une commande.");
+            showAlert(Alert.AlertType.WARNING, "Attention", "❌ Aucun plat n'est disponible.");
             return;
         }
         
-        // Dialogue de sélection du client
         Dialog<ClientRestau> clientDialog = new Dialog<>();
         clientDialog.setTitle("Passer une commande");
-        clientDialog.setHeaderText("Sélectionnez le client qui passe la commande");
+        clientDialog.setHeaderText("Sélectionnez le client");
+        
+        DialogPane clientPane = clientDialog.getDialogPane();
+        clientPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        clientPane.getStyleClass().add("dialog-pane");
         
         ButtonType selectionnerButtonType = new ButtonType("Sélectionner", ButtonBar.ButtonData.OK_DONE);
-        clientDialog.getDialogPane().getButtonTypes().addAll(selectionnerButtonType, ButtonType.CANCEL);
+        clientPane.getButtonTypes().addAll(selectionnerButtonType, ButtonType.CANCEL);
+        
+        Button selectionnerButton = (Button) clientPane.lookupButton(selectionnerButtonType);
+        selectionnerButton.getStyleClass().addAll("button", "primary-button");
+        Button cancelButton1 = (Button) clientPane.lookupButton(ButtonType.CANCEL);
+        cancelButton1.getStyleClass().add("button");
         
         ComboBox<ClientRestau> clientsCombo = new ComboBox<>();
         clientsCombo.getItems().addAll(clients);
         clientsCombo.setPromptText("Sélectionnez un client");
+        clientsCombo.getStyleClass().add("combo-box");
         
-        // Définir comment afficher les clients dans la combobox
         clientsCombo.setCellFactory(lv -> new ListCell<ClientRestau>() {
             @Override
             protected void updateItem(ClientRestau item, boolean empty) {
@@ -501,8 +536,7 @@ public class Main extends Application {
         VBox vbox = new VBox(10);
         vbox.getChildren().add(clientsCombo);
         vbox.setPadding(new Insets(20));
-        
-        clientDialog.getDialogPane().setContent(vbox);
+        clientPane.setContent(vbox);
         
         clientDialog.setResultConverter(dialogButton -> {
             if (dialogButton == selectionnerButtonType) {
@@ -512,21 +546,27 @@ public class Main extends Application {
         });
         
         Optional<ClientRestau> clientResult = clientDialog.showAndWait();
-        
         clientResult.ifPresent(client -> {
-            // Créer l'objet commande
             CommandeRestau commande = new CommandeRestau();
             
-            // Dialogue de sélection des plats (liste multiple)
             Dialog<List<PlatRestau>> platsDialog = new Dialog<>();
             platsDialog.setTitle("Sélection des plats");
-            platsDialog.setHeaderText("Sélectionnez les plats pour la commande de " + client.getPrenom() + " " + client.getNom());
+            platsDialog.setHeaderText("Sélectionnez les plats pour " + client.getPrenom() + " " + client.getNom());
+            
+            DialogPane platsPane = platsDialog.getDialogPane();
+            platsPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+            platsPane.getStyleClass().add("dialog-pane");
             
             ButtonType ajouterPlatsButtonType = new ButtonType("Ajouter à la commande", ButtonBar.ButtonData.OK_DONE);
-            platsDialog.getDialogPane().getButtonTypes().addAll(ajouterPlatsButtonType, ButtonType.CANCEL);
+            platsPane.getButtonTypes().addAll(ajouterPlatsButtonType, ButtonType.CANCEL);
             
-            // Créer une ListView avec checkboxes pour sélectionner plusieurs plats
+            Button ajouterPlatsButton = (Button) platsPane.lookupButton(ajouterPlatsButtonType);
+            ajouterPlatsButton.getStyleClass().addAll("button", "primary-button");
+            Button cancelButton2 = (Button) platsPane.lookupButton(ButtonType.CANCEL);
+            cancelButton2.getStyleClass().add("button");
+            
             ListView<PlatRestau> platListView = new ListView<>();
+            platListView.getStyleClass().add("list-view");
             platListView.getItems().addAll(platsDisponibles);
             platListView.setCellFactory(CheckBoxListCell.forListView(item -> {
                 BooleanProperty observable = new SimpleBooleanProperty();
@@ -534,7 +574,6 @@ public class Main extends Application {
                     if (isNowSelected) {
                         commande.ajouterPlat(item);
                     } else {
-                        // Retirer le plat (si possible)
                         List<PlatRestau> platsCommande = commande.getPlatsCommandes();
                         if (platsCommande.contains(item)) {
                             platsCommande.remove(item);
@@ -544,17 +583,19 @@ public class Main extends Application {
                 return observable;
             }));
             
-            // Afficher le total en temps réel
             Label totalLabel = new Label("Total: 0 FCFA");
+            totalLabel.getStyleClass().add("icon-label");
             platListView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
                 totalLabel.setText("Total: " + commande.getTotal() + " FCFA");
             });
             
             VBox platsVbox = new VBox(10);
-            platsVbox.getChildren().addAll(new Label("Sélectionnez les plats (cochez pour ajouter):"), platListView, totalLabel);
+            Label instructionLabel = new Label("Sélectionnez les plats (cochez pour ajouter):");
+            instructionLabel.getStyleClass().add("icon-label");
+            platsVbox.getChildren().addAll(instructionLabel, platListView, totalLabel);
             platsVbox.setPadding(new Insets(20));
-            platsDialog.getDialogPane().setContent(platsVbox);
-            platsDialog.getDialogPane().setPrefSize(450, 400);
+            platsPane.setContent(platsVbox);
+            platsPane.setPrefSize(450, 400);
             
             platsDialog.setResultConverter(dialogButton -> {
                 if (dialogButton == ajouterPlatsButtonType) {
@@ -564,99 +605,127 @@ public class Main extends Application {
             });
             
             Optional<List<PlatRestau>> platsResult = platsDialog.showAndWait();
-            
             platsResult.ifPresent(plats -> {
                 if (plats.isEmpty()) {
-                    showAlert(Alert.AlertType.WARNING, "Attention", "❌ Aucun plat n'a été sélectionné. La commande a été annulée.");
+                    showAlert(Alert.AlertType.WARNING, "Attention", "❌ Aucun plat sélectionné.");
                     return;
                 }
                 
-                // Enregistrer la commande
                 int commandeId = CommandeDAO.ajouterCommande(commande, client.getId());
-                
                 if (commandeId > 0) {
-                    // Afficher un récapitulatif de la commande
                     Dialog<Void> confirmationDialog = new Dialog<>();
                     confirmationDialog.setTitle("Commande passée");
                     confirmationDialog.setHeaderText("✅ Commande #" + commandeId + " passée avec succès !");
-                    confirmationDialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+                    
+                    DialogPane confirmPane = confirmationDialog.getDialogPane();
+                    confirmPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+                    confirmPane.getStyleClass().add("dialog-pane");
+                    confirmPane.getButtonTypes().add(ButtonType.OK);
+                    
+                    Button okButton = (Button) confirmPane.lookupButton(ButtonType.OK);
+                    okButton.getStyleClass().add("button");
                     
                     VBox recapVbox = new VBox(10);
-                    recapVbox.getChildren().add(new Label("Client: " + client.getPrenom() + " " + client.getNom()));
-                    recapVbox.getChildren().add(new Label("Plats commandés:"));
+                    Label clientLabel = new Label("Client: " + client.getPrenom() + " " + client.getNom());
+                    clientLabel.getStyleClass().add("icon-label");
+                    Label platsLabel = new Label("Plats commandés:");
+                    platsLabel.getStyleClass().add("icon-label");
                     
                     ListView<PlatRestau> recapListView = new ListView<>();
+                    recapListView.getStyleClass().add("list-view");
                     recapListView.getItems().addAll(plats);
                     recapListView.setCellFactory(lv -> new ListCell<PlatRestau>() {
                         @Override
                         protected void updateItem(PlatRestau item, boolean empty) {
                             super.updateItem(item, empty);
                             setText(empty ? "" : item.toString());
+                            if (!empty) {
+                                getStyleClass().add("list-cell");
+                            }
                         }
                     });
                     
-                    recapVbox.getChildren().add(recapListView);
-                    recapVbox.getChildren().add(new Label("Total: " + commande.getTotal() + " FCFA"));
-                    recapVbox.setPadding(new Insets(10));
+                    Label totalFinalLabel = new Label("Total: " + commande.getTotal() + " FCFA");
+                    totalFinalLabel.getStyleClass().add("icon-label");
                     
-                    confirmationDialog.getDialogPane().setContent(recapVbox);
-                    confirmationDialog.getDialogPane().setPrefSize(400, 350);
+                    recapVbox.getChildren().addAll(clientLabel, platsLabel, recapListView, totalFinalLabel);
+                    recapVbox.setPadding(new Insets(10));
+                    confirmPane.setContent(recapVbox);
+                    confirmPane.setPrefSize(400, 350);
                     confirmationDialog.showAndWait();
                 } else {
-                    showAlert(Alert.AlertType.ERROR, "Erreur", "❌ Erreur lors de l'enregistrement de la commande.");
+                    showAlert(Alert.AlertType.ERROR, "Erreur", "❌ Erreur lors de l'enregistrement.");
                 }
             });
         });
     }
     
-    // Dialogue pour lister toutes les commandes
     private void showListerCommandesDialog() {
         List<CommandeDAO.CommandeInfo> commandes = CommandeDAO.getAllCommandes();
         
         Dialog<Void> dialog = new Dialog<>();
         dialog.setTitle("Liste des commandes");
         dialog.setHeaderText("Voici toutes les commandes enregistrées");
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        dialogPane.getStyleClass().add("dialog-pane");
+        dialogPane.getButtonTypes().add(ButtonType.OK);
+        
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        okButton.getStyleClass().add("button");
         
         if (commandes.isEmpty()) {
-            dialog.setContentText("❌ Aucune commande n'est enregistrée.");
+            Label emptyLabel = new Label("❌ Aucune commande enregistrée.");
+            emptyLabel.getStyleClass().add("error-label");
+            dialogPane.setContent(emptyLabel);
         } else {
             ListView<CommandeDAO.CommandeInfo> commandeListView = new ListView<>();
+            commandeListView.getStyleClass().add("list-view");
             commandeListView.getItems().addAll(commandes);
             commandeListView.setCellFactory(lv -> new ListCell<CommandeDAO.CommandeInfo>() {
                 @Override
                 protected void updateItem(CommandeDAO.CommandeInfo item, boolean empty) {
                     super.updateItem(item, empty);
                     setText(empty ? "" : item.toString());
+                    if (!empty) {
+                        getStyleClass().add("list-cell");
+                    }
                 }
             });
             
             VBox vbox = new VBox(10);
             vbox.getChildren().add(commandeListView);
             vbox.setPadding(new Insets(20));
-            
-            dialog.getDialogPane().setContent(vbox);
-            dialog.getDialogPane().setPrefSize(500, 400);
+            dialogPane.setContent(vbox);
+            dialogPane.setPrefSize(500, 400);
         }
         
         dialog.showAndWait();
     }
     
-    // Dialogue pour afficher le détail d'une commande spécifique
     private void showCommandeDetailDialog() {
         List<CommandeDAO.CommandeInfo> commandes = CommandeDAO.getAllCommandes();
-        
         if (commandes.isEmpty()) {
-            showAlert(Alert.AlertType.INFORMATION, "Information", "❌ Aucune commande n'est enregistrée.");
+            showAlert(Alert.AlertType.INFORMATION, "Information", "❌ Aucune commande enregistrée.");
             return;
         }
         
         Dialog<Integer> dialog = new Dialog<>();
         dialog.setTitle("Détail commande");
-        dialog.setHeaderText("Entrez l'ID de la commande à afficher");
+        dialog.setHeaderText("Entrez l'ID de la commande");
+        
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        dialogPane.getStyleClass().add("dialog-pane");
         
         ButtonType rechercherButtonType = new ButtonType("Rechercher", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(rechercherButtonType, ButtonType.CANCEL);
+        dialogPane.getButtonTypes().addAll(rechercherButtonType, ButtonType.CANCEL);
+        
+        Button rechercherButton = (Button) dialogPane.lookupButton(rechercherButtonType);
+        rechercherButton.getStyleClass().addAll("button", "primary-button");
+        Button cancelButton = (Button) dialogPane.lookupButton(ButtonType.CANCEL);
+        cancelButton.getStyleClass().add("button");
         
         GridPane grid = new GridPane();
         grid.setHgap(10);
@@ -665,18 +734,21 @@ public class Main extends Application {
         
         TextField idField = new TextField();
         idField.setPromptText("ID de la commande");
+        idField.getStyleClass().add("text-field");
         
-        grid.add(new Label("ID:"), 0, 0);
+        Label idLabel = new Label("ID:");
+        idLabel.getStyleClass().add("icon-label");
+        
+        grid.add(idLabel, 0, 0);
         grid.add(idField, 1, 0);
-        
-        dialog.getDialogPane().setContent(grid);
+        dialogPane.setContent(grid);
         
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == rechercherButtonType) {
                 try {
                     return Integer.parseInt(idField.getText());
                 } catch (NumberFormatException e) {
-                    showAlert(Alert.AlertType.ERROR, "Erreur", "L'ID doit être un nombre entier valide.");
+                    showAlert(Alert.AlertType.ERROR, "Erreur", "L'ID doit être un nombre valide.");
                     return null;
                 }
             }
@@ -684,25 +756,31 @@ public class Main extends Application {
         });
         
         Optional<Integer> result = dialog.showAndWait();
-        
         result.ifPresent(id -> {
             CommandeDAO.CommandeDetail commande = CommandeDAO.getCommandeById(id);
             if (commande != null) {
-                // Afficher les détails dans une nouvelle fenêtre
                 Dialog<Void> detailDialog = new Dialog<>();
                 detailDialog.setTitle("Détail de la commande #" + id);
-                detailDialog.setHeaderText("Informations complètes de la commande");
-                detailDialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+                detailDialog.setHeaderText("Informations complètes");
+                
+                DialogPane detailPane = detailDialog.getDialogPane();
+                detailPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+                detailPane.getStyleClass().add("dialog-pane");
+                detailPane.getButtonTypes().add(ButtonType.OK);
+                
+                Button okButton = (Button) detailPane.lookupButton(ButtonType.OK);
+                okButton.getStyleClass().add("button");
                 
                 VBox detailsVbox = new VBox(10);
-                detailsVbox.getChildren().add(new Label("Date: " + commande.getDateCommande()));
-                detailsVbox.getChildren().add(new Label("Client: " + commande.getClientPrenom() + " " + commande.getClientNom() + " (ID: " + commande.getClientId() + ")"));
-                detailsVbox.getChildren().add(new Label("Plats commandés:"));
+                Label dateLabel = new Label("Date: " + commande.getDateCommande());
+                dateLabel.getStyleClass().add("icon-label");
+                Label clientLabel = new Label("Client: " + commande.getClientPrenom() + " " + commande.getClientNom() + " (ID: " + commande.getClientId() + ")");
+                clientLabel.getStyleClass().add("icon-label");
+                Label platsLabel = new Label("Plats commandés:");
+                platsLabel.getStyleClass().add("icon-label");
                 
-                // Regrouper les plats identiques pour afficher les quantités
                 Map<Integer, Integer> platQuantites = new HashMap<>();
                 Map<Integer, PlatRestau> platMap = new HashMap<>();
-                
                 for (PlatRestau plat : commande.getPlats()) {
                     int platId = plat.getId();
                     platQuantites.put(platId, platQuantites.getOrDefault(platId, 0) + 1);
@@ -710,19 +788,21 @@ public class Main extends Application {
                 }
                 
                 ListView<String> platsListView = new ListView<>();
+                platsListView.getStyleClass().add("list-view");
                 for (Map.Entry<Integer, Integer> entry : platQuantites.entrySet()) {
                     PlatRestau plat = platMap.get(entry.getKey());
                     int quantite = entry.getValue();
                     platsListView.getItems().add(plat.getNom() + " x" + quantite + " : " + 
-                                  (plat.getPrix() * quantite) + " FCFA (" + plat.getPrix() + " FCFA l'unité)");
+                            (plat.getPrix() * quantite) + " FCFA (" + plat.getPrix() + " FCFA l'unité)");
                 }
                 
-                detailsVbox.getChildren().add(platsListView);
-                detailsVbox.getChildren().add(new Label("Total: " + commande.getTotal() + " FCFA"));
-                detailsVbox.setPadding(new Insets(10));
+                Label totalLabel = new Label("Total: " + commande.getTotal() + " FCFA");
+                totalLabel.getStyleClass().add("icon-label");
                 
-                detailDialog.getDialogPane().setContent(detailsVbox);
-                detailDialog.getDialogPane().setPrefSize(450, 400);
+                detailsVbox.getChildren().addAll(dateLabel, clientLabel, platsLabel, platsListView, totalLabel);
+                detailsVbox.setPadding(new Insets(10));
+                detailPane.setContent(detailsVbox);
+                detailPane.setPrefSize(450, 400);
                 detailDialog.showAndWait();
             } else {
                 showAlert(Alert.AlertType.ERROR, "Erreur", "❌ Commande non trouvée.");
@@ -730,20 +810,24 @@ public class Main extends Application {
         });
     }
     
-    // Affiche la vue de gestion des clients
     private void showGestionClients(Stage primaryStage) {
         VBox layout = createModuleLayout("Gestion des Clients");
         
         Button ajouterButton = new Button("Ajouter un client");
+        ajouterButton.getStyleClass().add("button");
         Button afficherButton = new Button("Afficher tous les clients");
+        afficherButton.getStyleClass().add("button");
         Button detailButton = new Button("Afficher un client spécifique");
+        detailButton.getStyleClass().add("button");
         Button modifierButton = new Button("Modifier un client");
+        modifierButton.getStyleClass().add("button");
         Button supprimerButton = new Button("Supprimer un client");
+        supprimerButton.getStyleClass().add("button");
         Button retourButton = new Button("Retour au menu principal");
+        retourButton.getStyleClass().add("button");
         
         retourButton.setOnAction(e -> showMainMenu(primaryStage));
         
-        // Implémentation des actions
         ajouterButton.setOnAction(e -> showAjouterClientDialog());
         afficherButton.setOnAction(e -> showListerClientsDialog());
         detailButton.setOnAction(e -> showClientDetailDialog());
@@ -756,20 +840,27 @@ public class Main extends Application {
         );
         
         Scene scene = new Scene(layout, 400, 400);
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
         primaryStage.setScene(scene);
     }
     
-    // Dialogue pour ajouter un client
     private void showAjouterClientDialog() {
         Dialog<ClientRestau> dialog = new Dialog<>();
         dialog.setTitle("Ajouter un client");
         dialog.setHeaderText("Saisissez les informations du nouveau client");
         
-        // Boutons
-        ButtonType ajouterButtonType = new ButtonType("Ajouter", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(ajouterButtonType, ButtonType.CANCEL);
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        dialogPane.getStyleClass().add("dialog-pane");
         
-        // Grille pour le formulaire
+        ButtonType ajouterButtonType = new ButtonType("Ajouter", ButtonBar.ButtonData.OK_DONE);
+        dialogPane.getButtonTypes().addAll(ajouterButtonType, ButtonType.CANCEL);
+        
+        Button ajouterButton = (Button) dialogPane.lookupButton(ajouterButtonType);
+        ajouterButton.getStyleClass().addAll("button", "primary-button");
+        Button cancelButton = (Button) dialogPane.lookupButton(ButtonType.CANCEL);
+        cancelButton.getStyleClass().add("button");
+        
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
@@ -777,36 +868,43 @@ public class Main extends Application {
         
         TextField idField = new TextField();
         idField.setPromptText("ID du client");
+        idField.getStyleClass().add("text-field");
         TextField nomField = new TextField();
         nomField.setPromptText("Nom du client");
+        nomField.getStyleClass().add("text-field");
         TextField prenomField = new TextField();
         prenomField.setPromptText("Prénom du client");
+        prenomField.getStyleClass().add("text-field");
         
-        grid.add(new Label("ID:"), 0, 0);
+        Label idLabel = new Label("ID:");
+        idLabel.getStyleClass().add("icon-label");
+        Label nomLabel = new Label("Nom:");
+        nomLabel.getStyleClass().add("icon-label");
+        Label prenomLabel = new Label("Prénom:");
+        prenomLabel.getStyleClass().add("icon-label");
+        
+        grid.add(idLabel, 0, 0);
         grid.add(idField, 1, 0);
-        grid.add(new Label("Nom:"), 0, 1);
+        grid.add(nomLabel, 0, 1);
         grid.add(nomField, 1, 1);
-        grid.add(new Label("Prénom:"), 0, 2);
+        grid.add(prenomLabel, 0, 2);
         grid.add(prenomField, 1, 2);
         
-        dialog.getDialogPane().setContent(grid);
+        dialogPane.setContent(grid);
         
-        // Validation et conversion des résultats
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == ajouterButtonType) {
                 try {
                     String nom = nomField.getText();
                     String prenom = prenomField.getText();
                     int id = Integer.parseInt(idField.getText());
-                    
                     if (nom.isEmpty() || prenom.isEmpty()) {
                         showAlert(Alert.AlertType.ERROR, "Erreur", "Le nom et le prénom ne peuvent pas être vides.");
                         return null;
                     }
-                    
                     return new ClientRestau(id, nom, prenom);
                 } catch (NumberFormatException e) {
-                    showAlert(Alert.AlertType.ERROR, "Erreur", "L'ID doit être un nombre entier valide.");
+                    showAlert(Alert.AlertType.ERROR, "Erreur", "L'ID doit être un nombre valide.");
                     return null;
                 }
             }
@@ -814,7 +912,6 @@ public class Main extends Application {
         });
         
         Optional<ClientRestau> result = dialog.showAndWait();
-        
         result.ifPresent(client -> {
             boolean success = ClientDAO.ajouterClient(client);
             if (success) {
@@ -825,54 +922,72 @@ public class Main extends Application {
         });
     }
     
-    // Dialogue pour lister tous les clients
     private void showListerClientsDialog() {
         List<ClientRestau> clients = ClientDAO.getAllClients();
         
         Dialog<Void> dialog = new Dialog<>();
         dialog.setTitle("Liste des clients");
         dialog.setHeaderText("Voici tous les clients enregistrés");
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        dialogPane.getStyleClass().add("dialog-pane");
+        dialogPane.getButtonTypes().add(ButtonType.OK);
+        
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        okButton.getStyleClass().add("button");
         
         if (clients.isEmpty()) {
-            dialog.setContentText("❌ Aucun client n'est enregistré.");
+            Label emptyLabel = new Label("❌ Aucun client enregistré.");
+            emptyLabel.getStyleClass().add("error-label");
+            dialogPane.setContent(emptyLabel);
         } else {
             ListView<ClientRestau> clientListView = new ListView<>();
+            clientListView.getStyleClass().add("list-view");
             clientListView.getItems().addAll(clients);
             clientListView.setCellFactory(lv -> new ListCell<ClientRestau>() {
                 @Override
                 protected void updateItem(ClientRestau item, boolean empty) {
                     super.updateItem(item, empty);
                     setText(empty ? "" : item.toString());
+                    if (!empty) {
+                        getStyleClass().add("list-cell");
+                    }
                 }
             });
             
             VBox vbox = new VBox(10);
             vbox.getChildren().add(clientListView);
             vbox.setPadding(new Insets(20));
-            
-            dialog.getDialogPane().setContent(vbox);
-            dialog.getDialogPane().setPrefSize(400, 400);
+            dialogPane.setContent(vbox);
+            dialogPane.setPrefSize(400, 400);
         }
         
         dialog.showAndWait();
     }
     
-    // Dialogue pour afficher le détail d'un client spécifique
     private void showClientDetailDialog() {
         List<ClientRestau> clients = ClientDAO.getAllClients();
-        
         if (clients.isEmpty()) {
-            showAlert(Alert.AlertType.INFORMATION, "Information", "❌ Aucun client n'est enregistré.");
+            showAlert(Alert.AlertType.INFORMATION, "Information", "❌ Aucun client enregistré.");
             return;
         }
         
         Dialog<Integer> dialog = new Dialog<>();
         dialog.setTitle("Détail client");
-        dialog.setHeaderText("Entrez l'ID du client à afficher");
+        dialog.setHeaderText("Entrez l'ID du client");
+        
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        dialogPane.getStyleClass().add("dialog-pane");
         
         ButtonType rechercherButtonType = new ButtonType("Rechercher", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(rechercherButtonType, ButtonType.CANCEL);
+        dialogPane.getButtonTypes().addAll(rechercherButtonType, ButtonType.CANCEL);
+        
+        Button rechercherButton = (Button) dialogPane.lookupButton(rechercherButtonType);
+        rechercherButton.getStyleClass().addAll("button", "primary-button");
+        Button cancelButton = (Button) dialogPane.lookupButton(ButtonType.CANCEL);
+        cancelButton.getStyleClass().add("button");
         
         GridPane grid = new GridPane();
         grid.setHgap(10);
@@ -881,18 +996,21 @@ public class Main extends Application {
         
         TextField idField = new TextField();
         idField.setPromptText("ID du client");
+        idField.getStyleClass().add("text-field");
         
-        grid.add(new Label("ID:"), 0, 0);
+        Label idLabel = new Label("ID:");
+        idLabel.getStyleClass().add("icon-label");
+        
+        grid.add(idLabel, 0, 0);
         grid.add(idField, 1, 0);
-        
-        dialog.getDialogPane().setContent(grid);
+        dialogPane.setContent(grid);
         
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == rechercherButtonType) {
                 try {
                     return Integer.parseInt(idField.getText());
                 } catch (NumberFormatException e) {
-                    showAlert(Alert.AlertType.ERROR, "Erreur", "L'ID doit être un nombre entier valide.");
+                    showAlert(Alert.AlertType.ERROR, "Erreur", "L'ID doit être un nombre valide.");
                     return null;
                 }
             }
@@ -900,14 +1018,20 @@ public class Main extends Application {
         });
         
         Optional<Integer> result = dialog.showAndWait();
-        
         result.ifPresent(id -> {
             ClientRestau client = ClientDAO.getClientById(id);
             if (client != null) {
                 Alert detailAlert = new Alert(Alert.AlertType.INFORMATION);
+                detailAlert.getDialogPane().getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+                detailAlert.getDialogPane().getStyleClass().add("dialog-pane");
                 detailAlert.setTitle("Détail du client");
                 detailAlert.setHeaderText("Informations du client #" + id);
-                detailAlert.setContentText(client.toString());
+                Label contentLabel = new Label(client.toString());
+                contentLabel.getStyleClass().add("icon-label");
+                detailAlert.getDialogPane().setContent(contentLabel);
+                
+                Button okButton = (Button) detailAlert.getDialogPane().lookupButton(ButtonType.OK);
+                okButton.getStyleClass().add("button");
                 detailAlert.showAndWait();
             } else {
                 showAlert(Alert.AlertType.ERROR, "Erreur", "❌ Client non trouvé.");
@@ -915,28 +1039,34 @@ public class Main extends Application {
         });
     }
     
-    // Dialogue pour modifier un client
     private void showModifierClientDialog() {
         List<ClientRestau> clients = ClientDAO.getAllClients();
-        
         if (clients.isEmpty()) {
-            showAlert(Alert.AlertType.INFORMATION, "Information", "❌ Aucun client n'est enregistré.");
+            showAlert(Alert.AlertType.INFORMATION, "Information", "❌ Aucun client enregistré.");
             return;
         }
         
-        // Dialogue de sélection du client
         Dialog<ClientRestau> selectionDialog = new Dialog<>();
         selectionDialog.setTitle("Modifier un client");
         selectionDialog.setHeaderText("Sélectionnez le client à modifier");
         
+        DialogPane selectionPane = selectionDialog.getDialogPane();
+        selectionPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        selectionPane.getStyleClass().add("dialog-pane");
+        
         ButtonType selectionnerButtonType = new ButtonType("Sélectionner", ButtonBar.ButtonData.OK_DONE);
-        selectionDialog.getDialogPane().getButtonTypes().addAll(selectionnerButtonType, ButtonType.CANCEL);
+        selectionPane.getButtonTypes().addAll(selectionnerButtonType, ButtonType.CANCEL);
+        
+        Button selectionnerButton = (Button) selectionPane.lookupButton(selectionnerButtonType);
+        selectionnerButton.getStyleClass().addAll("button", "primary-button");
+        Button cancelButton1 = (Button) selectionPane.lookupButton(ButtonType.CANCEL);
+        cancelButton1.getStyleClass().add("button");
         
         ComboBox<ClientRestau> clientsCombo = new ComboBox<>();
         clientsCombo.getItems().addAll(clients);
         clientsCombo.setPromptText("Sélectionnez un client");
+        clientsCombo.getStyleClass().add("combo-box");
         
-        // Définir comment afficher les clients dans la combobox
         clientsCombo.setCellFactory(lv -> new ListCell<ClientRestau>() {
             @Override
             protected void updateItem(ClientRestau item, boolean empty) {
@@ -956,8 +1086,7 @@ public class Main extends Application {
         VBox vbox = new VBox(10);
         vbox.getChildren().add(clientsCombo);
         vbox.setPadding(new Insets(20));
-        
-        selectionDialog.getDialogPane().setContent(vbox);
+        selectionPane.setContent(vbox);
         
         selectionDialog.setResultConverter(dialogButton -> {
             if (dialogButton == selectionnerButtonType) {
@@ -967,15 +1096,22 @@ public class Main extends Application {
         });
         
         Optional<ClientRestau> selectionResult = selectionDialog.showAndWait();
-        
         selectionResult.ifPresent(clientSelectionne -> {
-            // Dialogue de modification
             Dialog<ClientRestau> modifDialog = new Dialog<>();
             modifDialog.setTitle("Modifier un client");
             modifDialog.setHeaderText("Modifiez les informations du client");
             
+            DialogPane modifPane = modifDialog.getDialogPane();
+            modifPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+            modifPane.getStyleClass().add("dialog-pane");
+            
             ButtonType modifierButtonType = new ButtonType("Modifier", ButtonBar.ButtonData.OK_DONE);
-            modifDialog.getDialogPane().getButtonTypes().addAll(modifierButtonType, ButtonType.CANCEL);
+            modifPane.getButtonTypes().addAll(modifierButtonType, ButtonType.CANCEL);
+            
+            Button modifierButton = (Button) modifPane.lookupButton(modifierButtonType);
+            modifierButton.getStyleClass().addAll("button", "primary-button");
+            Button cancelButton2 = (Button) modifPane.lookupButton(ButtonType.CANCEL);
+            cancelButton2.getStyleClass().add("button");
             
             GridPane grid = new GridPane();
             grid.setHgap(10);
@@ -983,25 +1119,29 @@ public class Main extends Application {
             grid.setPadding(new Insets(20, 150, 10, 10));
             
             TextField nomField = new TextField(clientSelectionne.getNom());
+            nomField.getStyleClass().add("text-field");
             TextField prenomField = new TextField(clientSelectionne.getPrenom());
+            prenomField.getStyleClass().add("text-field");
             
-            grid.add(new Label("Nom:"), 0, 0);
+            Label nomLabel = new Label("Nom:");
+            nomLabel.getStyleClass().add("icon-label");
+            Label prenomLabel = new Label("Prénom:");
+            prenomLabel.getStyleClass().add("icon-label");
+            
+            grid.add(nomLabel, 0, 0);
             grid.add(nomField, 1, 0);
-            grid.add(new Label("Prénom:"), 0, 1);
+            grid.add(prenomLabel, 0, 1);
             grid.add(prenomField, 1, 1);
-            
-            modifDialog.getDialogPane().setContent(grid);
+            modifPane.setContent(grid);
             
             modifDialog.setResultConverter(dialogButton -> {
                 if (dialogButton == modifierButtonType) {
                     String nom = nomField.getText();
                     String prenom = prenomField.getText();
-                    
                     if (nom.isEmpty() || prenom.isEmpty()) {
                         showAlert(Alert.AlertType.ERROR, "Erreur", "Le nom et le prénom ne peuvent pas être vides.");
                         return null;
                     }
-                    
                     clientSelectionne.setNom(nom);
                     clientSelectionne.setPrenom(prenom);
                     return clientSelectionne;
@@ -1010,24 +1150,21 @@ public class Main extends Application {
             });
             
             Optional<ClientRestau> modifResult = modifDialog.showAndWait();
-            
             modifResult.ifPresent(clientModifie -> {
                 boolean success = ClientDAO.updateClient(clientModifie);
                 if (success) {
                     showAlert(Alert.AlertType.INFORMATION, "Succès", "✅ Client modifié avec succès !");
                 } else {
-                    showAlert(Alert.AlertType.ERROR, "Erreur", "❌ Erreur lors de la modification du client.");
+                    showAlert(Alert.AlertType.ERROR, "Erreur", "❌ Erreur lors de la modification.");
                 }
             });
         });
     }
     
-    // Dialogue pour supprimer un client
     private void showSupprimerClientDialog() {
         List<ClientRestau> clients = ClientDAO.getAllClients();
-        
         if (clients.isEmpty()) {
-            showAlert(Alert.AlertType.INFORMATION, "Information", "❌ Aucun client n'est enregistré.");
+            showAlert(Alert.AlertType.INFORMATION, "Information", "❌ Aucun client enregistré.");
             return;
         }
         
@@ -1035,14 +1172,23 @@ public class Main extends Application {
         dialog.setTitle("Supprimer un client");
         dialog.setHeaderText("Sélectionnez le client à supprimer");
         
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        dialogPane.getStyleClass().add("dialog-pane");
+        
         ButtonType supprimerButtonType = new ButtonType("Supprimer", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(supprimerButtonType, ButtonType.CANCEL);
+        dialogPane.getButtonTypes().addAll(supprimerButtonType, ButtonType.CANCEL);
+        
+        Button supprimerButton = (Button) dialogPane.lookupButton(supprimerButtonType);
+        supprimerButton.getStyleClass().addAll("button", "primary-button");
+        Button cancelButton = (Button) dialogPane.lookupButton(ButtonType.CANCEL);
+        cancelButton.getStyleClass().add("button");
         
         ComboBox<ClientRestau> clientsCombo = new ComboBox<>();
         clientsCombo.getItems().addAll(clients);
         clientsCombo.setPromptText("Sélectionnez un client");
+        clientsCombo.getStyleClass().add("combo-box");
         
-        // Définir comment afficher les clients dans la combobox
         clientsCombo.setCellFactory(lv -> new ListCell<ClientRestau>() {
             @Override
             protected void updateItem(ClientRestau item, boolean empty) {
@@ -1062,8 +1208,7 @@ public class Main extends Application {
         VBox vbox = new VBox(10);
         vbox.getChildren().add(clientsCombo);
         vbox.setPadding(new Insets(20));
-        
-        dialog.getDialogPane().setContent(vbox);
+        dialogPane.setContent(vbox);
         
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == supprimerButtonType) {
@@ -1073,12 +1218,20 @@ public class Main extends Application {
         });
         
         Optional<ClientRestau> result = dialog.showAndWait();
-        
         result.ifPresent(client -> {
             Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            confirm.getDialogPane().getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+            confirm.getDialogPane().getStyleClass().add("dialog-pane");
             confirm.setTitle("Confirmation");
             confirm.setHeaderText("Êtes-vous sûr de vouloir supprimer ce client ?");
-            confirm.setContentText(client.toString());
+            Label contentLabel = new Label(client.toString());
+            contentLabel.getStyleClass().add("icon-label");
+            confirm.getDialogPane().setContent(contentLabel);
+            
+            Button okButton = (Button) confirm.getDialogPane().lookupButton(ButtonType.OK);
+            okButton.getStyleClass().add("button");
+            Button cancelButton2 = (Button) confirm.getDialogPane().lookupButton(ButtonType.CANCEL);
+            cancelButton2.getStyleClass().add("button");
             
             Optional<ButtonType> confirmation = confirm.showAndWait();
             if (confirmation.isPresent() && confirmation.get() == ButtonType.OK) {
@@ -1086,26 +1239,30 @@ public class Main extends Application {
                 if (success) {
                     showAlert(Alert.AlertType.INFORMATION, "Succès", "✅ Client supprimé avec succès !");
                 } else {
-                    showAlert(Alert.AlertType.ERROR, "Erreur", "❌ Erreur lors de la suppression du client.");
+                    showAlert(Alert.AlertType.ERROR, "Erreur", "❌ Erreur lors de la suppression.");
                 }
             }
         });
     }
     
-    // Affiche la vue de gestion du personnel
     private void showGestionPersonnels(Stage primaryStage) {
         VBox layout = createModuleLayout("Gestion du Personnel");
         
         Button ajouterButton = new Button("Ajouter un personnel");
+        ajouterButton.getStyleClass().add("button");
         Button afficherButton = new Button("Afficher tous les personnels");
+        afficherButton.getStyleClass().add("button");
         Button detailButton = new Button("Afficher un personnel spécifique");
+        detailButton.getStyleClass().add("button");
         Button modifierButton = new Button("Modifier un personnel");
+        modifierButton.getStyleClass().add("button");
         Button supprimerButton = new Button("Supprimer un personnel");
+        supprimerButton.getStyleClass().add("button");
         Button retourButton = new Button("Retour au menu principal");
+        retourButton.getStyleClass().add("button");
         
         retourButton.setOnAction(e -> showMainMenu(primaryStage));
         
-        // Implémentation des actions
         ajouterButton.setOnAction(e -> showAjouterPersonnelDialog());
         afficherButton.setOnAction(e -> showListerPersonnelsDialog());
         detailButton.setOnAction(e -> showPersonnelDetailDialog());
@@ -1118,20 +1275,27 @@ public class Main extends Application {
         );
         
         Scene scene = new Scene(layout, 400, 400);
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
         primaryStage.setScene(scene);
     }
     
-    // Dialogue pour ajouter un personnel
     private void showAjouterPersonnelDialog() {
         Dialog<PersonnelRestau> dialog = new Dialog<>();
         dialog.setTitle("Ajouter un personnel");
         dialog.setHeaderText("Saisissez les informations du nouveau personnel");
         
-        // Boutons
-        ButtonType ajouterButtonType = new ButtonType("Ajouter", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(ajouterButtonType, ButtonType.CANCEL);
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        dialogPane.getStyleClass().add("dialog-pane");
         
-        // Grille pour le formulaire
+        ButtonType ajouterButtonType = new ButtonType("Ajouter", ButtonBar.ButtonData.OK_DONE);
+        dialogPane.getButtonTypes().addAll(ajouterButtonType, ButtonType.CANCEL);
+        
+        Button ajouterButton = (Button) dialogPane.lookupButton(ajouterButtonType);
+        ajouterButton.getStyleClass().addAll("button", "primary-button");
+        Button cancelButton = (Button) dialogPane.lookupButton(ButtonType.CANCEL);
+        cancelButton.getStyleClass().add("button");
+        
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
@@ -1139,29 +1303,44 @@ public class Main extends Application {
         
         TextField idField = new TextField();
         idField.setPromptText("ID du personnel");
+        idField.getStyleClass().add("text-field");
         TextField nomField = new TextField();
         nomField.setPromptText("Nom du personnel");
+        nomField.getStyleClass().add("text-field");
         TextField prenomField = new TextField();
         prenomField.setPromptText("Prénom du personnel");
+        prenomField.getStyleClass().add("text-field");
         TextField posteField = new TextField();
         posteField.setPromptText("Poste occupé");
+        posteField.getStyleClass().add("text-field");
         TextField salaireField = new TextField();
         salaireField.setPromptText("Salaire en FCFA");
+        salaireField.getStyleClass().add("text-field");
         
-        grid.add(new Label("ID:"), 0, 0);
+        Label idLabel = new Label("ID:");
+        idLabel.getStyleClass().add("icon-label");
+        Label nomLabel = new Label("Nom:");
+        nomLabel.getStyleClass().add("icon-label");
+        Label prenomLabel = new Label("Prénom:");
+        prenomLabel.getStyleClass().add("icon-label");
+        Label posteLabel = new Label("Poste:");
+        posteLabel.getStyleClass().add("icon-label");
+        Label salaireLabel = new Label("Salaire:");
+        salaireLabel.getStyleClass().add("icon-label");
+        
+        grid.add(idLabel, 0, 0);
         grid.add(idField, 1, 0);
-        grid.add(new Label("Nom:"), 0, 1);
+        grid.add(nomLabel, 0, 1);
         grid.add(nomField, 1, 1);
-        grid.add(new Label("Prénom:"), 0, 2);
+        grid.add(prenomLabel, 0, 2);
         grid.add(prenomField, 1, 2);
-        grid.add(new Label("Poste:"), 0, 3);
+        grid.add(posteLabel, 0, 3);
         grid.add(posteField, 1, 3);
-        grid.add(new Label("Salaire:"), 0, 4);
+        grid.add(salaireLabel, 0, 4);
         grid.add(salaireField, 1, 4);
         
-        dialog.getDialogPane().setContent(grid);
+        dialogPane.setContent(grid);
         
-        // Validation et conversion des résultats
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == ajouterButtonType) {
                 try {
@@ -1170,15 +1349,13 @@ public class Main extends Application {
                     String poste = posteField.getText();
                     int id = Integer.parseInt(idField.getText());
                     double salaire = Double.parseDouble(salaireField.getText());
-                    
                     if (nom.isEmpty() || prenom.isEmpty() || poste.isEmpty()) {
                         showAlert(Alert.AlertType.ERROR, "Erreur", "Tous les champs textuels doivent être remplis.");
                         return null;
                     }
-                    
                     return new PersonnelRestau(id, nom, prenom, poste, salaire);
                 } catch (NumberFormatException e) {
-                    showAlert(Alert.AlertType.ERROR, "Erreur", "L'ID doit être un entier et le salaire un nombre décimal valide.");
+                    showAlert(Alert.AlertType.ERROR, "Erreur", "L'ID et le salaire doivent être des nombres valides.");
                     return null;
                 }
             }
@@ -1186,7 +1363,6 @@ public class Main extends Application {
         });
         
         Optional<PersonnelRestau> result = dialog.showAndWait();
-        
         result.ifPresent(personnel -> {
             boolean success = PersonnelDAO.ajouterPersonnel(personnel);
             if (success) {
@@ -1197,54 +1373,72 @@ public class Main extends Application {
         });
     }
     
-    // Dialogue pour lister tous les personnels
     private void showListerPersonnelsDialog() {
         List<PersonnelRestau> personnels = PersonnelDAO.getAllPersonnels();
         
         Dialog<Void> dialog = new Dialog<>();
         dialog.setTitle("Liste du personnel");
         dialog.setHeaderText("Voici tous les membres du personnel");
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        dialogPane.getStyleClass().add("dialog-pane");
+        dialogPane.getButtonTypes().add(ButtonType.OK);
+        
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        okButton.getStyleClass().add("button");
         
         if (personnels.isEmpty()) {
-            dialog.setContentText("❌ Aucun personnel n'est enregistré.");
+            Label emptyLabel = new Label("❌ Aucun personnel enregistré.");
+            emptyLabel.getStyleClass().add("error-label");
+            dialogPane.setContent(emptyLabel);
         } else {
             ListView<PersonnelRestau> personnelListView = new ListView<>();
+            personnelListView.getStyleClass().add("list-view");
             personnelListView.getItems().addAll(personnels);
             personnelListView.setCellFactory(lv -> new ListCell<PersonnelRestau>() {
                 @Override
                 protected void updateItem(PersonnelRestau item, boolean empty) {
                     super.updateItem(item, empty);
                     setText(empty ? "" : item.toString());
+                    if (!empty) {
+                        getStyleClass().add("list-cell");
+                    }
                 }
             });
             
             VBox vbox = new VBox(10);
             vbox.getChildren().add(personnelListView);
             vbox.setPadding(new Insets(20));
-            
-            dialog.getDialogPane().setContent(vbox);
-            dialog.getDialogPane().setPrefSize(500, 400);
+            dialogPane.setContent(vbox);
+            dialogPane.setPrefSize(500, 400);
         }
         
         dialog.showAndWait();
     }
     
-    // Dialogue pour afficher le détail d'un personnel spécifique
     private void showPersonnelDetailDialog() {
         List<PersonnelRestau> personnels = PersonnelDAO.getAllPersonnels();
-        
         if (personnels.isEmpty()) {
-            showAlert(Alert.AlertType.INFORMATION, "Information", "❌ Aucun personnel n'est enregistré.");
+            showAlert(Alert.AlertType.INFORMATION, "Information", "❌ Aucun personnel enregistré.");
             return;
         }
         
         Dialog<Integer> dialog = new Dialog<>();
         dialog.setTitle("Détail personnel");
-        dialog.setHeaderText("Entrez l'ID du personnel à afficher");
+        dialog.setHeaderText("Entrez l'ID du personnel");
+        
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        dialogPane.getStyleClass().add("dialog-pane");
         
         ButtonType rechercherButtonType = new ButtonType("Rechercher", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(rechercherButtonType, ButtonType.CANCEL);
+        dialogPane.getButtonTypes().addAll(rechercherButtonType, ButtonType.CANCEL);
+        
+        Button rechercherButton = (Button) dialogPane.lookupButton(rechercherButtonType);
+        rechercherButton.getStyleClass().addAll("button", "primary-button");
+        Button cancelButton = (Button) dialogPane.lookupButton(ButtonType.CANCEL);
+        cancelButton.getStyleClass().add("button");
         
         GridPane grid = new GridPane();
         grid.setHgap(10);
@@ -1253,18 +1447,21 @@ public class Main extends Application {
         
         TextField idField = new TextField();
         idField.setPromptText("ID du personnel");
+        idField.getStyleClass().add("text-field");
         
-        grid.add(new Label("ID:"), 0, 0);
+        Label idLabel = new Label("ID:");
+        idLabel.getStyleClass().add("icon-label");
+        
+        grid.add(idLabel, 0, 0);
         grid.add(idField, 1, 0);
-        
-        dialog.getDialogPane().setContent(grid);
+        dialogPane.setContent(grid);
         
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == rechercherButtonType) {
                 try {
                     return Integer.parseInt(idField.getText());
                 } catch (NumberFormatException e) {
-                    showAlert(Alert.AlertType.ERROR, "Erreur", "L'ID doit être un nombre entier valide.");
+                    showAlert(Alert.AlertType.ERROR, "Erreur", "L'ID doit être un nombre valide.");
                     return null;
                 }
             }
@@ -1272,32 +1469,49 @@ public class Main extends Application {
         });
         
         Optional<Integer> result = dialog.showAndWait();
-        
         result.ifPresent(id -> {
             PersonnelRestau personnel = PersonnelDAO.getPersonnelById(id);
             if (personnel != null) {
                 Dialog<Void> detailDialog = new Dialog<>();
                 detailDialog.setTitle("Détail du personnel");
                 detailDialog.setHeaderText("Informations du personnel #" + id);
-                detailDialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+                
+                DialogPane detailPane = detailDialog.getDialogPane();
+                detailPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+                detailPane.getStyleClass().add("dialog-pane");
+                detailPane.getButtonTypes().add(ButtonType.OK);
+                
+                Button okButton = (Button) detailPane.lookupButton(ButtonType.OK);
+                okButton.getStyleClass().add("button");
                 
                 GridPane detailGrid = new GridPane();
                 detailGrid.setHgap(10);
                 detailGrid.setVgap(10);
                 detailGrid.setPadding(new Insets(20, 20, 10, 10));
                 
-                detailGrid.add(new Label("ID:"), 0, 0);
+                Label idDetailLabel = new Label("ID:");
+                idDetailLabel.getStyleClass().add("icon-label");
+                Label nomLabel = new Label("Nom:");
+                nomLabel.getStyleClass().add("icon-label");
+                Label prenomLabel = new Label("Prénom:");
+                prenomLabel.getStyleClass().add("icon-label");
+                Label posteLabel = new Label("Poste:");
+                posteLabel.getStyleClass().add("icon-label");
+                Label salaireLabel = new Label("Salaire:");
+                salaireLabel.getStyleClass().add("icon-label");
+                
+                detailGrid.add(idDetailLabel, 0, 0);
                 detailGrid.add(new Label(String.valueOf(personnel.getId())), 1, 0);
-                detailGrid.add(new Label("Nom:"), 0, 1);
+                detailGrid.add(nomLabel, 0, 1);
                 detailGrid.add(new Label(personnel.getNom()), 1, 1);
-                detailGrid.add(new Label("Prénom:"), 0, 2);
+                detailGrid.add(prenomLabel, 0, 2);
                 detailGrid.add(new Label(personnel.getPrenom()), 1, 2);
-                detailGrid.add(new Label("Poste:"), 0, 3);
+                detailGrid.add(posteLabel, 0, 3);
                 detailGrid.add(new Label(personnel.getPoste()), 1, 3);
-                detailGrid.add(new Label("Salaire:"), 0, 4);
+                detailGrid.add(salaireLabel, 0, 4);
                 detailGrid.add(new Label(personnel.getSalaire() + " FCFA"), 1, 4);
                 
-                detailDialog.getDialogPane().setContent(detailGrid);
+                detailPane.setContent(detailGrid);
                 detailDialog.showAndWait();
             } else {
                 showAlert(Alert.AlertType.ERROR, "Erreur", "❌ Personnel non trouvé.");
@@ -1305,28 +1519,34 @@ public class Main extends Application {
         });
     }
     
-    // Dialogue pour modifier un personnel
     private void showModifierPersonnelDialog() {
         List<PersonnelRestau> personnels = PersonnelDAO.getAllPersonnels();
-        
         if (personnels.isEmpty()) {
-            showAlert(Alert.AlertType.INFORMATION, "Information", "❌ Aucun personnel n'est enregistré.");
+            showAlert(Alert.AlertType.INFORMATION, "Information", "❌ Aucun personnel enregistré.");
             return;
         }
         
-        // Dialogue de sélection du personnel
         Dialog<PersonnelRestau> selectionDialog = new Dialog<>();
         selectionDialog.setTitle("Modifier un personnel");
         selectionDialog.setHeaderText("Sélectionnez le personnel à modifier");
         
+        DialogPane selectionPane = selectionDialog.getDialogPane();
+        selectionPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        selectionPane.getStyleClass().add("dialog-pane");
+        
         ButtonType selectionnerButtonType = new ButtonType("Sélectionner", ButtonBar.ButtonData.OK_DONE);
-        selectionDialog.getDialogPane().getButtonTypes().addAll(selectionnerButtonType, ButtonType.CANCEL);
+        selectionPane.getButtonTypes().addAll(selectionnerButtonType, ButtonType.CANCEL);
+        
+        Button selectionnerButton = (Button) selectionPane.lookupButton(selectionnerButtonType);
+        selectionnerButton.getStyleClass().addAll("button", "primary-button");
+        Button cancelButton1 = (Button) selectionPane.lookupButton(ButtonType.CANCEL);
+        cancelButton1.getStyleClass().add("button");
         
         ComboBox<PersonnelRestau> personnelsCombo = new ComboBox<>();
         personnelsCombo.getItems().addAll(personnels);
         personnelsCombo.setPromptText("Sélectionnez un personnel");
+        personnelsCombo.getStyleClass().add("combo-box");
         
-        // Définir comment afficher les personnels dans la combobox
         personnelsCombo.setCellFactory(lv -> new ListCell<PersonnelRestau>() {
             @Override
             protected void updateItem(PersonnelRestau item, boolean empty) {
@@ -1346,8 +1566,7 @@ public class Main extends Application {
         VBox vbox = new VBox(10);
         vbox.getChildren().add(personnelsCombo);
         vbox.setPadding(new Insets(20));
-        
-        selectionDialog.getDialogPane().setContent(vbox);
+        selectionPane.setContent(vbox);
         
         selectionDialog.setResultConverter(dialogButton -> {
             if (dialogButton == selectionnerButtonType) {
@@ -1357,15 +1576,22 @@ public class Main extends Application {
         });
         
         Optional<PersonnelRestau> selectionResult = selectionDialog.showAndWait();
-        
         selectionResult.ifPresent(personnelSelectionne -> {
-            // Dialogue de modification
             Dialog<PersonnelRestau> modifDialog = new Dialog<>();
             modifDialog.setTitle("Modifier un personnel");
             modifDialog.setHeaderText("Modifiez les informations du personnel");
             
+            DialogPane modifPane = modifDialog.getDialogPane();
+            modifPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+            modifPane.getStyleClass().add("dialog-pane");
+            
             ButtonType modifierButtonType = new ButtonType("Modifier", ButtonBar.ButtonData.OK_DONE);
-            modifDialog.getDialogPane().getButtonTypes().addAll(modifierButtonType, ButtonType.CANCEL);
+            modifPane.getButtonTypes().addAll(modifierButtonType, ButtonType.CANCEL);
+            
+            Button modifierButton = (Button) modifPane.lookupButton(modifierButtonType);
+            modifierButton.getStyleClass().addAll("button", "primary-button");
+            Button cancelButton2 = (Button) modifPane.lookupButton(ButtonType.CANCEL);
+            cancelButton2.getStyleClass().add("button");
             
             GridPane grid = new GridPane();
             grid.setHgap(10);
@@ -1373,20 +1599,33 @@ public class Main extends Application {
             grid.setPadding(new Insets(20, 150, 10, 10));
             
             TextField nomField = new TextField(personnelSelectionne.getNom());
+            nomField.getStyleClass().add("text-field");
             TextField prenomField = new TextField(personnelSelectionne.getPrenom());
+            prenomField.getStyleClass().add("text-field");
             TextField posteField = new TextField(personnelSelectionne.getPoste());
+            posteField.getStyleClass().add("text-field");
             TextField salaireField = new TextField(String.valueOf(personnelSelectionne.getSalaire()));
+            salaireField.getStyleClass().add("text-field");
             
-            grid.add(new Label("Nom:"), 0, 0);
+            Label nomLabel = new Label("Nom:");
+            nomLabel.getStyleClass().add("icon-label");
+            Label prenomLabel = new Label("Prénom:");
+            prenomLabel.getStyleClass().add("icon-label");
+            Label posteLabel = new Label("Poste:");
+            posteLabel.getStyleClass().add("icon-label");
+            Label salaireLabel = new Label("Salaire:");
+            salaireLabel.getStyleClass().add("icon-label");
+            
+            grid.add(nomLabel, 0, 0);
             grid.add(nomField, 1, 0);
-            grid.add(new Label("Prénom:"), 0, 1);
+            grid.add(prenomLabel, 0, 1);
             grid.add(prenomField, 1, 1);
-            grid.add(new Label("Poste:"), 0, 2);
+            grid.add(posteLabel, 0, 2);
             grid.add(posteField, 1, 2);
-            grid.add(new Label("Salaire:"), 0, 3);
+            grid.add(salaireLabel, 0, 3);
             grid.add(salaireField, 1, 3);
             
-            modifDialog.getDialogPane().setContent(grid);
+            modifPane.setContent(grid);
             
             modifDialog.setResultConverter(dialogButton -> {
                 if (dialogButton == modifierButtonType) {
@@ -1395,19 +1634,17 @@ public class Main extends Application {
                         String prenom = prenomField.getText();
                         String poste = posteField.getText();
                         double salaire = Double.parseDouble(salaireField.getText());
-                        
                         if (nom.isEmpty() || prenom.isEmpty() || poste.isEmpty()) {
                             showAlert(Alert.AlertType.ERROR, "Erreur", "Tous les champs textuels doivent être remplis.");
                             return null;
                         }
-                        
                         personnelSelectionne.setNom(nom);
                         personnelSelectionne.setPrenom(prenom);
                         personnelSelectionne.setPoste(poste);
                         personnelSelectionne.setSalaire(salaire);
                         return personnelSelectionne;
                     } catch (NumberFormatException e) {
-                        showAlert(Alert.AlertType.ERROR, "Erreur", "Le salaire doit être un nombre décimal valide.");
+                        showAlert(Alert.AlertType.ERROR, "Erreur", "Le salaire doit être un nombre valide.");
                         return null;
                     }
                 }
@@ -1415,24 +1652,21 @@ public class Main extends Application {
             });
             
             Optional<PersonnelRestau> modifResult = modifDialog.showAndWait();
-            
             modifResult.ifPresent(personnelModifie -> {
                 boolean success = PersonnelDAO.updatePersonnel(personnelModifie);
                 if (success) {
                     showAlert(Alert.AlertType.INFORMATION, "Succès", "✅ Personnel modifié avec succès !");
                 } else {
-                    showAlert(Alert.AlertType.ERROR, "Erreur", "❌ Erreur lors de la modification du personnel.");
+                    showAlert(Alert.AlertType.ERROR, "Erreur", "❌ Erreur lors de la modification.");
                 }
             });
         });
     }
     
-    // Dialogue pour supprimer un personnel
     private void showSupprimerPersonnelDialog() {
         List<PersonnelRestau> personnels = PersonnelDAO.getAllPersonnels();
-        
         if (personnels.isEmpty()) {
-            showAlert(Alert.AlertType.INFORMATION, "Information", "❌ Aucun personnel n'est enregistré.");
+            showAlert(Alert.AlertType.INFORMATION, "Information", "❌ Aucun personnel enregistré.");
             return;
         }
         
@@ -1440,14 +1674,23 @@ public class Main extends Application {
         dialog.setTitle("Supprimer un personnel");
         dialog.setHeaderText("Sélectionnez le personnel à supprimer");
         
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        dialogPane.getStyleClass().add("dialog-pane");
+        
         ButtonType supprimerButtonType = new ButtonType("Supprimer", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(supprimerButtonType, ButtonType.CANCEL);
+        dialogPane.getButtonTypes().addAll(supprimerButtonType, ButtonType.CANCEL);
+        
+        Button supprimerButton = (Button) dialogPane.lookupButton(supprimerButtonType);
+        supprimerButton.getStyleClass().addAll("button", "primary-button");
+        Button cancelButton = (Button) dialogPane.lookupButton(ButtonType.CANCEL);
+        cancelButton.getStyleClass().add("button");
         
         ComboBox<PersonnelRestau> personnelsCombo = new ComboBox<>();
         personnelsCombo.getItems().addAll(personnels);
         personnelsCombo.setPromptText("Sélectionnez un personnel");
+        personnelsCombo.getStyleClass().add("combo-box");
         
-        // Définir comment afficher les personnels dans la combobox
         personnelsCombo.setCellFactory(lv -> new ListCell<PersonnelRestau>() {
             @Override
             protected void updateItem(PersonnelRestau item, boolean empty) {
@@ -1467,8 +1710,7 @@ public class Main extends Application {
         VBox vbox = new VBox(10);
         vbox.getChildren().add(personnelsCombo);
         vbox.setPadding(new Insets(20));
-        
-        dialog.getDialogPane().setContent(vbox);
+        dialogPane.setContent(vbox);
         
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == supprimerButtonType) {
@@ -1478,12 +1720,20 @@ public class Main extends Application {
         });
         
         Optional<PersonnelRestau> result = dialog.showAndWait();
-        
         result.ifPresent(personnel -> {
             Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            confirm.getDialogPane().getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+            confirm.getDialogPane().getStyleClass().add("dialog-pane");
             confirm.setTitle("Confirmation");
             confirm.setHeaderText("Êtes-vous sûr de vouloir supprimer ce personnel ?");
-            confirm.setContentText(personnel.toString());
+            Label contentLabel = new Label(personnel.toString());
+            contentLabel.getStyleClass().add("icon-label");
+            confirm.getDialogPane().setContent(contentLabel);
+            
+            Button okButton = (Button) confirm.getDialogPane().lookupButton(ButtonType.OK);
+            okButton.getStyleClass().add("button");
+            Button cancelButton2 = (Button) confirm.getDialogPane().lookupButton(ButtonType.CANCEL);
+            cancelButton2.getStyleClass().add("button");
             
             Optional<ButtonType> confirmation = confirm.showAndWait();
             if (confirmation.isPresent() && confirmation.get() == ButtonType.OK) {
@@ -1491,33 +1741,50 @@ public class Main extends Application {
                 if (success) {
                     showAlert(Alert.AlertType.INFORMATION, "Succès", "✅ Personnel supprimé avec succès !");
                 } else {
-                    showAlert(Alert.AlertType.ERROR, "Erreur", "❌ Erreur lors de la suppression du personnel.");
+                    showAlert(Alert.AlertType.ERROR, "Erreur", "❌ Erreur lors de la suppression.");
                 }
             }
         });
     }
     
-    // Crée un layout de base pour un module
     private VBox createModuleLayout(String title) {
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(20, 20, 20, 20));
         layout.setAlignment(Pos.CENTER);
         
         Label titleLabel = new Label(title);
-        titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        titleLabel.getStyleClass().add("title");
         
         layout.getChildren().addAll(titleLabel, new Separator());
-        
         return layout;
     }
     
-    // Affiche une alerte pour les fonctionnalités non implémentées
-    private void showNotImplementedAlert(String feature) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Fonctionnalité non implémentée");
+    private void showAlert(Alert.AlertType alertType, String title, String content) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
         alert.setHeaderText(null);
-        alert.setContentText("La fonctionnalité \"" + feature + "\" doit être implémentée dans l'interface graphique.");
+        
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        dialogPane.getStyleClass().add("dialog-pane");
+        
+        Label contentLabel = new Label(content);
+        contentLabel.getStyleClass().add(alertType == Alert.AlertType.ERROR ? "error-label" : "icon-label");
+        dialogPane.setContent(contentLabel);
+        
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        if (okButton != null) {
+            okButton.getStyleClass().add("button");
+        }
+        
         alert.showAndWait();
+    }
+    
+    private Button createMenuButton(String text) {
+        Button button = new Button(text);
+        button.setPrefWidth(250);
+        button.getStyleClass().add("button");
+        return button;
     }
     
     public static void main(String[] args) {
