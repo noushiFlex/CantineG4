@@ -93,7 +93,3 @@ Pour accéder au système, utilisez:
 ## Auteurs
 
 Yohann - noushiFlex
-
-## Licence
-
-Ce projet est sous licence [spécifiez votre licence]
