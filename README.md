@@ -1,7 +1,7 @@
 # Cantine Scolaire - Système de Gestion
 
 Ce projet est un système de gestion de cantine scolaire développé en Java, disponible en deux versions :
-- Une version console (branche actuelle)  
+- Une version console (branche `console`)  
 - Une interface graphique en JavaFX (branche `interface`)
 
 ## 📋 Fonctionnalités
