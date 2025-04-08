@@ -1,18 +1,56 @@
-## Getting Started
+# Cantine Scolaire - Système de Gestion
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+Ce projet est un système de gestion de cantine scolaire développé en Java, disponible en deux versions :
+- Une version console (branche actuelle)  
+- Une interface graphique en JavaFX (branche `interface`)
 
-## Folder Structure
+## 📋 Fonctionnalités
 
-The workspace contains two folders by default, where:
+Le système permet de gérer :
+- Les plats et menus 🍽️
+- Les commandes des utilisateurs 🛒
+- Les clients (élèves, enseignants) 👥
+- Le personnel de cantine 🧑‍🍳
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+## 🏗️ Architecture
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+Les diagrammes UML du projet sont disponibles sur le dépôt [organisation-pauses](https://github.com/noushiFlex/organisation-pauses).
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+## 💻 Installation et démarrage
 
-## Dependency Management
+### Prérequis
+- Java JDK 11 ou supérieur
+- PostgreSQL
 
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+### Structure du projet
+- `src` : Code source de l'application
+- `lib` : Bibliothèques et dépendances
+- `bin` : Fichiers compilés
+
+### Démarrage de l'application console
+```bash
+# Compilation
+javac -d bin src/*.java
+
+# Exécution
+java -cp bin Main
+```
+
+## 🔒 Connexion
+
+Pour vous connecter à l'application, utilisez :
+- Nom d'utilisateur : `admin`
+- Mot de passe : `admin`
+
+## 💾 Base de données
+
+Cette application utilise PostgreSQL comme système de gestion de base de données.
+
+## 🔄 Autres versions
+
+- **Console** : Version actuelle
+- **Interface** : Version avec interface graphique JavaFX disponible sur la branche `interface`
+
+## 🔗 Liens utiles
+
+Dépôt principal avec les diagrammes UML : [https://github.com/noushiFlex/organisation-pauses](https://github.com/noushiFlex/organisation-pauses)
